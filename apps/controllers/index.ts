@@ -1,16 +1,17 @@
-import { Request, Response } from 'express';
-import { StatusCodes } from 'http-status-codes'
-import { ResponseData, ResponseDataAttributes } from '../utilities/response'
+import { Request, Response } from "express";
+import { StatusCodes } from "http-status-codes";
+import { ResponseData, ResponseDataAttributes } from "../utilities/response";
 
 export const index = async (req: Request, res: Response) => {
     try {
-        const data = {aboutMe: "project itera"}
-        const response = <ResponseDataAttributes>ResponseData.default
-        response.data = data
-        return res.status(StatusCodes.OK).json(response)
+        const data = { aboutMe: "project itera" };
+        const response = <ResponseDataAttributes>ResponseData.default;
+        response.data = data;
+        return res.status(StatusCodes.OK).json(response);
     } catch (error) {
-        console.log(error)
-        const response = <ResponseDataAttributes>ResponseData.error("Tidak dapat memproses permintaan. Laporkan kendala ini.")
-        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(response)
+        console.log(error);
+        const message = "Tidak dapat memproses permintaan. Laporkan kendala ini.";
+        const response = <ResponseDataAttributes>ResponseData.error(message);
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(response);
     }
-}
+};

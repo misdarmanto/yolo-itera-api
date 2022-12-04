@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "start": "tsc -p tsconfig.json && node ./build/bin/www.js",
-    "dev": "nodemon /bin/www.ts"
+    "start": "tsc -p tsconfig.json && node ./build/app.js",
+    "dev": "nodemon app.ts"
   },
   "keywords": [
     "api",
