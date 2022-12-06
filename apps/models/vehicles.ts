@@ -1,16 +1,16 @@
 import { DataTypes, Model, Optional } from "sequelize";
 import { sequelize } from ".";
-import { UserModel } from "../user/user";
-import { ZygoteAttributes, ZygoteModel } from "../zygote";
+import { UserModel } from "./users";
+import { ZygoteAttributes, ZygoteModel } from "./zygote";
 
 export interface VehicleAttributes extends ZygoteAttributes {
     plateNumber: number;
-    rfid: number;
     type: string;
     userId: number;
     name: string;
     color: string;
     photo: string;
+    stnk: string;
 }
 
 type VehicleCreationAttributes = Optional<VehicleAttributes, "id" | "createdOn" | "modifiedOn">;
@@ -18,7 +18,7 @@ type VehicleCreationAttributes = Optional<VehicleAttributes, "id" | "createdOn" 
 interface VehicleInstance extends Model<VehicleAttributes, VehicleCreationAttributes>, VehicleAttributes {}
 
 export const VehicleModel = sequelize.define<VehicleInstance>(
-    "vehicle",
+    "vehicles",
     {
         ...ZygoteModel,
         userId: {
@@ -26,10 +26,6 @@ export const VehicleModel = sequelize.define<VehicleInstance>(
             allowNull: false,
         },
         plateNumber: {
-            type: DataTypes.INTEGER,
-            allowNull: false,
-        },
-        rfid: {
             type: DataTypes.INTEGER,
             allowNull: false,
         },
@@ -49,11 +45,15 @@ export const VehicleModel = sequelize.define<VehicleInstance>(
             type: DataTypes.STRING,
             allowNull: false,
         },
+        stnk: {
+            type: DataTypes.STRING,
+            allowNull: false,
+        },
     },
     {
         ...sequelize,
         timestamps: false,
-        tableName: "vehicle",
+        tableName: "vehicles",
         deletedAt: false,
         paranoid: true,
         underscored: true,

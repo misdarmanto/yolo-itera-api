@@ -2,9 +2,9 @@ import { Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import { ResponseData, ResponseDataAttributes } from "../utilities/response";
 import { Op } from "sequelize";
-import { VehicleAttributes, VehicleModel } from "../models/mysql/vehicle/vehicle";
+import { VehicleAttributes, VehicleModel } from "../models/vehicles";
 import { Pagination } from "../utilities/pagination";
-import { UserModel } from "../models/mysql/user/user";
+import { UserModel } from "../models/users";
 
 const getListVehicle = async (req: any, res: Response) => {
     try {
@@ -16,15 +16,15 @@ const getListVehicle = async (req: any, res: Response) => {
                     [Op.or]: [{ name: { [Op.like]: `%${req.query.search}%` } }],
                 }),
             },
+            include: {
+                model: UserModel,
+                attributes: ["name", "rfid"],
+            },
             order: [["id", "desc"]],
             ...(req.query.pagination == "true" && {
                 limit: page.limit,
                 offset: page.offset,
             }),
-            include: {
-                model: UserModel,
-                attributes: ["user_name"],
-            },
         });
         const response = <ResponseDataAttributes>ResponseData.default;
         response.data = page.data(users);
@@ -55,12 +55,22 @@ const getSingleVehicle = async (req: any, res: Response) => {
 
 const createVehicle = async (req: any, res: Response) => {
     const body = <VehicleAttributes>req.body;
-    if (!body.name || !body.plateNumber || !body.type || !body.color || !body.rfid) {
+    if (!body.name || !body.plateNumber || !body.type || !body.color || !body.userId) {
         const message = "Permintaan tidak lengkap.";
         const response = <ResponseDataAttributes>ResponseData.error(message);
         return res.status(StatusCodes.BAD_REQUEST).json(response);
     }
     try {
+        const isUsersExis = await UserModel.findOne({
+            where: { deleted: { [Op.eq]: 0 }, id: { [Op.eq]: body.userId } },
+        });
+
+        if (!isUsersExis) {
+            const message = "User belum terdafar, silahkan lakukan registrasi";
+            const response = <ResponseDataAttributes>ResponseData.error(message);
+            return res.status(StatusCodes.BAD_REQUEST).json(response);
+        }
+
         const vehicle = await VehicleModel.create(body);
         const response = <ResponseDataAttributes>ResponseData.default;
         response.data = vehicle;
@@ -84,14 +94,13 @@ const updateVehicle = async (req: any, res: Response) => {
         const newData = {
             ...(body.name && { name: body.name }),
             ...(body.plateNumber && { platNumber: body.plateNumber }),
-            ...(body.rfid && { rfid: body.rfid }),
             ...(body.type && { type: body.type }),
             ...(body.userId && { userId: body.userId }),
             ...(body.color && { color: body.color }),
             ...(body.photo && { photo: body.photo }),
         };
 
-        const vehicle = await VehicleModel.update(newData, { where: { id: { [Op.eq]: body.id } } });
+        await VehicleModel.update(newData, { where: { id: { [Op.eq]: body.id } } });
         const response = <ResponseDataAttributes>ResponseData.default;
         response.data = "berhasil di rubah";
         return res.status(StatusCodes.OK).json(response);
@@ -104,7 +113,7 @@ const updateVehicle = async (req: any, res: Response) => {
 };
 
 const verifyVehicle = async (req: any, res: Response) => {
-    if (!req.query.plateNumber || !req.query.rfid) {
+    if (!req.query.plate_number || !req.query.rfid) {
         const message = "Permintaan tidak lengkap.";
         const response = <ResponseDataAttributes>ResponseData.error(message);
         return res.status(StatusCodes.BAD_REQUEST).json(response);
@@ -113,8 +122,14 @@ const verifyVehicle = async (req: any, res: Response) => {
         const vehicle = await VehicleModel.findOne({
             where: {
                 deleted: { [Op.eq]: 0 },
-                plateNumber: { [Op.eq]: req.query.plateNumber },
-                rfid: { [Op.eq]: req.query.rfid },
+                plateNumber: { [Op.eq]: req.query.plate_number },
+            },
+            include: {
+                model: UserModel,
+                where: {
+                    deleted: { [Op.eq]: 0 },
+                    rfid: { [Op.eq]: req.query.rfid },
+                },
             },
         });
 

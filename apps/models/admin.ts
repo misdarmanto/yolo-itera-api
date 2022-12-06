@@ -1,8 +1,8 @@
 import { DataTypes, Model, Optional } from "sequelize";
 import { sequelize } from ".";
-import { ZygoteAttributes, ZygoteModel } from "../zygote";
+import { ZygoteAttributes, ZygoteModel } from "./zygote";
 
-export interface UserAttributes extends ZygoteAttributes {
+export interface AdminAttributes extends ZygoteAttributes {
   userName: string;
   password: string;
   rfid: string;
@@ -11,12 +11,12 @@ export interface UserAttributes extends ZygoteAttributes {
   photo: string;
 }
 
-type UserCreationAttributes = Optional<UserAttributes, "id" | "createdOn" | "modifiedOn">;
+type AdminCreationAttributes = Optional<AdminAttributes, "id" | "createdOn" | "modifiedOn">;
 
-interface UserInstance extends Model<UserAttributes, UserCreationAttributes>, UserAttributes {}
+interface AdminInstance extends Model<AdminAttributes, AdminCreationAttributes>, AdminAttributes {}
 
-export const UserModel = sequelize.define<UserInstance>(
-  "user",
+export const AdminModel = sequelize.define<AdminInstance>(
+  "admin",
   {
     ...ZygoteModel,
     userName: {
@@ -47,7 +47,7 @@ export const UserModel = sequelize.define<UserInstance>(
   {
     ...sequelize,
     timestamps: false,
-    tableName: "user",
+    tableName: "admin",
     deletedAt: false,
     paranoid: true,
     underscored: true,

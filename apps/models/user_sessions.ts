@@ -1,7 +1,7 @@
 import { DataTypes, Model, Optional } from "sequelize";
 import { sequelize } from ".";
-import { ZygoteAttributes, ZygoteModel } from "../zygote";
-import { UserModel } from "./user";
+import { ZygoteAttributes, ZygoteModel } from "./zygote";
+import { UserModel } from "./users";
 
 export interface UserSessionAttributes extends ZygoteAttributes {
   userId: number;
