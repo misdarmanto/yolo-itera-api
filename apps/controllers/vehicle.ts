@@ -112,44 +112,6 @@ const updateVehicle = async (req: any, res: Response) => {
     }
 };
 
-const verifyVehicle = async (req: any, res: Response) => {
-    if (!req.query.plate_number || !req.query.rfid) {
-        const message = "Permintaan tidak lengkap.";
-        const response = <ResponseDataAttributes>ResponseData.error(message);
-        return res.status(StatusCodes.BAD_REQUEST).json(response);
-    }
-    try {
-        const vehicle = await VehicleModel.findOne({
-            where: {
-                deleted: { [Op.eq]: 0 },
-                plateNumber: { [Op.eq]: req.query.plate_number },
-            },
-            include: {
-                model: UserModel,
-                where: {
-                    deleted: { [Op.eq]: 0 },
-                    rfid: { [Op.eq]: req.query.rfid },
-                },
-            },
-        });
-
-        if (!vehicle) {
-            const message = "Jenis kendaraan tidak ditemukan. Silahkan lakukan pendaftaran terlebih dahulu.";
-            const response = <ResponseDataAttributes>ResponseData.error(message);
-            return res.status(StatusCodes.NOT_FOUND).json(response);
-        }
-
-        const response = <ResponseDataAttributes>ResponseData.default;
-        response.data = vehicle;
-        return res.status(StatusCodes.OK).json(response);
-    } catch (error) {
-        console.log(error);
-        const message = "Tidak dapat memproses. Laporkan kendala ini.";
-        const response = <ResponseDataAttributes>ResponseData.error(message);
-        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(response);
-    }
-};
-
 const deleteVehicle = async (req: any, res: Response) => {
     const query = <VehicleAttributes>req.query;
     if (!query.id) {
@@ -176,5 +138,4 @@ export const VEHICLE = {
     update: updateVehicle,
     delete: deleteVehicle,
     single: getSingleVehicle,
-    verify: verifyVehicle,
 };

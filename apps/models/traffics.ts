@@ -54,5 +54,5 @@ export const TrafficsModel = sequelize.define<TrafficsInstance>(
     }
 );
 
-TrafficsModel.hasMany(VehicleModel, { sourceKey: "vehicle_id", foreignKey: "id" });
-TrafficsModel.hasOne(UserModel, { sourceKey: "user_id", foreignKey: "id" });
+TrafficsModel.hasOne(VehicleModel, { sourceKey: "vehicleId", foreignKey: "id" });
+TrafficsModel.hasOne(UserModel, { sourceKey: "userId", foreignKey: "id" });

@@ -3,6 +3,7 @@ import { index } from "../controllers";
 import { VEHICLE } from "../controllers/vehicle";
 import { USER } from "../controllers/user";
 import { middleware } from "../middlewares";
+import { TRAFFICS } from "../controllers/traffics";
 
 export const route = (app: Express) => {
     app.get("/", (req: Request, res: Response) => index(req, res));
@@ -23,10 +24,16 @@ export const route = (app: Express) => {
 
     const vehicleRouter = express.Router();
     app.use("/vehicles", middleware.useAuthorization, vehicleRouter);
-    vehicleRouter.get("/verify", (req: Request, res: Response) => VEHICLE.verify(req, res));
     vehicleRouter.get("/list", (req: Request, res: Response) => VEHICLE.list(req, res));
     vehicleRouter.get("/", (req: Request, res: Response) => VEHICLE.single(req, res));
     vehicleRouter.post("/", (req: Request, res: Response) => VEHICLE.create(req, res));
     vehicleRouter.patch("/", (req: Request, res: Response) => VEHICLE.update(req, res));
     vehicleRouter.delete("/", (req: Request, res: Response) => VEHICLE.delete(req, res));
+
+    const trafficRoute = express.Router();
+    app.use("/traffics", middleware.useAuthorization, trafficRoute);
+    trafficRoute.post("/verify", (req: Request, res: Response) =>TRAFFICS.verify(req, res));
+    trafficRoute.get("/list", (req: Request, res: Response) =>TRAFFICS.list(req, res));
+    trafficRoute.get("/", (req: Request, res: Response) =>TRAFFICS.single(req, res));
+    trafficRoute.delete("/", (req: Request, res: Response) =>TRAFFICS.delete(req, res));
 };
