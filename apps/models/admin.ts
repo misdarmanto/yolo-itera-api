@@ -3,9 +3,8 @@ import { sequelize } from ".";
 import { ZygoteAttributes, ZygoteModel } from "./zygote";
 
 export interface AdminAttributes extends ZygoteAttributes {
-  userName: string;
+  name: string;
   password: string;
-  rfid: string;
   email: string;
   role: string;
   photo: string;
@@ -19,15 +18,7 @@ export const AdminModel = sequelize.define<AdminInstance>(
   "admin",
   {
     ...ZygoteModel,
-    userName: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    password: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    rfid: {
+   name: {
       type: DataTypes.STRING,
       allowNull: false,
     },
@@ -35,6 +26,11 @@ export const AdminModel = sequelize.define<AdminInstance>(
       type: DataTypes.STRING,
       allowNull: false,
     },
+    password: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    
     role: {
       type: DataTypes.STRING,
       allowNull: false,

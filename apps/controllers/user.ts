@@ -6,6 +6,38 @@ import { VehicleModel } from "../models/vehicles";
 import { Pagination } from "../utilities/pagination";
 import { ResponseData, ResponseDataAttributes } from "../utilities/response";
 
+const getListUsers = async (req: any, res: Response) => {
+    try {
+        const page = new Pagination(+req.query.page || 0, +req.query.size || 10);
+        const whereClause = {
+            deleted: { [Op.eq]: 0 },
+            ...(req.query.search && {
+                [Op.or]: [
+                    { name: { [Op.like]: `%${req.query.search}%` } },
+                    { email: { [Op.like]: `%${req.query.search}%` } },
+                ],
+            }),
+        };
+        const users = await UserModel.findAndCountAll({
+            where: whereClause,
+            order: [["id", "desc"]],
+            ...(req.query.pagination == "true" && {
+                limit: page.limit,
+                offset: page.offset,
+            }),
+            include: VehicleModel,
+        });
+        const response = <ResponseDataAttributes>ResponseData.default;
+        response.data = page.data(users);
+        return res.status(StatusCodes.OK).json(response);
+    } catch (error) {
+        console.log(error);
+        const message = "Tidak dapat memproses permintaan. Laporkan kendala ini.";
+        const response = <ResponseDataAttributes>ResponseData.error(message);
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(response);
+    }
+};
+
 const createUser = async (req: any, res: Response) => {
     const body = <UserAttributes>req.body;
     if (!body.name || !body.email || !body.phone) {
@@ -52,37 +84,6 @@ const getSingleUser = async (req: any, res: Response) => {
     } catch (error) {
         console.log(error);
         const message = "Tidak dapat memproses. Laporkan kendala ini.";
-        const response = <ResponseDataAttributes>ResponseData.error(message);
-        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(response);
-    }
-};
-
-const getListUsers = async (req: any, res: Response) => {
-    try {
-        const page = new Pagination(+req.query.page || 0, +req.query.size || 10);
-        const users = await UserModel.findAndCountAll({
-            where: {
-                deleted: { [Op.eq]: 0 },
-                ...(req.query.search && {
-                    [Op.or]: [
-                        { name: { [Op.like]: `%${req.query.search}%` } },
-                        { email: { [Op.like]: `%${req.query.search}%` } },
-                    ],
-                }),
-            },
-            order: [["id", "desc"]],
-            ...(req.query.pagination == "true" && {
-                limit: page.limit,
-                offset: page.offset,
-            }),
-            include: VehicleModel,
-        });
-        const response = <ResponseDataAttributes>ResponseData.default;
-        response.data = page.data(users);
-        return res.status(StatusCodes.OK).json(response);
-    } catch (error) {
-        console.log(error);
-        const message = "Tidak dapat memproses permintaan. Laporkan kendala ini.";
         const response = <ResponseDataAttributes>ResponseData.error(message);
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(response);
     }

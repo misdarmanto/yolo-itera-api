@@ -93,7 +93,7 @@ const updateVehicle = async (req: any, res: Response) => {
     try {
         const newData = {
             ...(body.name && { name: body.name }),
-            ...(body.plateNumber && { platNumber: body.plateNumber }),
+            ...(body.plateNumber && { plateNumber: body.plateNumber }),
             ...(body.type && { type: body.type }),
             ...(body.userId && { userId: body.userId }),
             ...(body.color && { color: body.color }),

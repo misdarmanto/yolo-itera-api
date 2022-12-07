@@ -4,7 +4,7 @@ import { ResponseData, ResponseDataAttributes } from "../utilities/response";
 
 export const index = async (req: Request, res: Response) => {
     try {
-        const data = { aboutMe: "project itera" };
+        const data = { aboutMe: "welcome to itera" };
         const response = <ResponseDataAttributes>ResponseData.default;
         response.data = data;
         return res.status(StatusCodes.OK).json(response);

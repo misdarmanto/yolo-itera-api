@@ -4,7 +4,7 @@ import { UserModel } from "./users";
 import { ZygoteAttributes, ZygoteModel } from "./zygote";
 
 export interface VehicleAttributes extends ZygoteAttributes {
-    plateNumber: number;
+    plateNumber: string;
     type: string;
     userId: number;
     name: string;
@@ -26,7 +26,7 @@ export const VehicleModel = sequelize.define<VehicleInstance>(
             allowNull: false,
         },
         plateNumber: {
-            type: DataTypes.INTEGER,
+            type: DataTypes.STRING,
             allowNull: false,
         },
         type: {
