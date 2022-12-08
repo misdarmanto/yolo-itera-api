@@ -4,6 +4,7 @@ import { Op, UUIDV4 } from "sequelize";
 import { AdminAttributes, AdminModel } from "../models/admin";
 import { UserAttributes, UserModel } from "../models/users";
 import { UserSessionAttributes, UserSessionModel } from "../models/user_sessions";
+import { generateAccessToken, verifyAccessToken } from "../utilities/jwt";
 import { Pagination } from "../utilities/pagination";
 import { ResponseData, ResponseDataAttributes } from "../utilities/response";
 import { hashPassword } from "../utilities/scure_password";
@@ -26,7 +27,7 @@ const getListAdmin = async (req: any, res: Response) => {
                 limit: page.limit,
                 offset: page.offset,
             }),
-            attributes: ["name", "email", "role", "photo"]
+            attributes: ["name", "email", "role", "photo"],
         });
         const response = <ResponseDataAttributes>ResponseData.default;
         response.data = page.data(admin);
@@ -67,8 +68,15 @@ const adminLogin = async (req: any, res: Response) => {
             const response = <ResponseDataAttributes>ResponseData.error(message);
             return res.status(StatusCodes.UNAUTHORIZED).json(response);
         }
+
         const response = <ResponseDataAttributes>ResponseData.default;
-        response.data = "login success";
+        response.data = {
+            adminId: user.id,
+            adminName: user.name,
+            email: user.email,
+            role: user.role,
+            photo: user.photo,
+        };
         return res.status(StatusCodes.OK).json(response);
     } catch (error) {
         console.log(error);
@@ -115,9 +123,17 @@ const adminRegister = async (req: any, res: Response) => {
 
 const adminLogout = async (req: any, res: Response) => {
     try {
-        res.clearCookie("access_token");
+        const token = req.body.token;
+
+        if (!token) {
+            const message = "invalid token";
+            const response = <ResponseDataAttributes>ResponseData.error(message);
+            return res.status(StatusCodes.BAD_REQUEST).json(response);
+        }
+
+        const user = verifyAccessToken(token);
         const response = <ResponseDataAttributes>ResponseData.default;
-        response.data = "logout sucsess";
+        response.data = user;
         return res.status(StatusCodes.OK).json(response);
     } catch (error) {
         console.log(error);

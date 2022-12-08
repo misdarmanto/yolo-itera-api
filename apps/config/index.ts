@@ -9,7 +9,7 @@ export const CONFIG = {
     port: process.env.APP_PORT ?? 6001,
     log: process.env.LOG == "true",
     secret: {
-        token: process.env.TOKEN_SECRET || '',
+        token: process.env.TOKEN_SECRET || 'qwerty',
         password_encryption: process.env.SECRET_PASSWORD_ENCRYPTION || '',
         admin_password_encryption: process.env.SECRET_ADMIN_PASSWORD_ENCRYPTION || '',
         pin_encryption: process.env.SECRET_PIN_ENCRYPTION || '',
