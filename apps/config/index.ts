@@ -15,8 +15,8 @@ export const CONFIG = {
         pin_encryption: process.env.SECRET_PIN_ENCRYPTION || '',
     },
     authorization: {
-        username: process.env.AUTHORIZATION_USERNAME || 'itera',
-        passsword: process.env.AUTHORIZATION_PASSWORD || 'secret'
+        username: process.env.AUTHORIZATION_USERNAME || 'areti',
+        passsword: process.env.AUTHORIZATION_PASSWORD || 'p!s4n9-g0d0k-s3g0-t!wul'
     },
     base_url: process.env.BASE_URL || `http://localhost:${process.env.APP_PORT}`
 }

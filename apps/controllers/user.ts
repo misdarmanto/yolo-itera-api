@@ -74,6 +74,12 @@ const createUser = async (req: any, res: Response) => {
 };
 
 const getSingleUser = async (req: any, res: Response) => {
+    if (!req.query.id) {
+        const message = "Permintaan tidak lengkap.";
+        const response = <ResponseDataAttributes>ResponseData.error(message);
+        return res.status(StatusCodes.BAD_REQUEST).json(response);
+    }
+
     try {
         const user = await UserModel.findOne({
             where: { deleted: { [Op.eq]: 0 }, id: { [Op.eq]: req.query.id } },
