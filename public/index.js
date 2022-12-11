@@ -21,7 +21,6 @@ app.use(function (req, res, next) {
     res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, content-type, Authorization, Content-Type');
     next();
 });
-// Router definitions
 app.routes = (0, routes_1.route)(app);
 const PORT = config_1.CONFIG.port;
 app.listen(PORT, () => console.log(`listening on ${PORT}`));
