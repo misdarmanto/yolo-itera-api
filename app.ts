@@ -19,7 +19,6 @@ app.use(function (req, res, next) {
     next()
 })
 
-// Router definitions
 app.routes = route(app)
 
 const PORT = CONFIG.port
