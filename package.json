@@ -4,7 +4,7 @@
   "description": "project itera API",
   "main": "index.js",
   "scripts": {
-    "build": "tsc -p tsconfig.json",
+    "build": "tsc -p tsconfig.json && node ./public/app.js",
     "start": "tsc -p tsconfig.json && node ./public/app.js",
     "dev": "nodemon app.ts",
     "postinstall": "tsc"
