@@ -6,7 +6,7 @@ export const CONFIG = {
     app_version: process.env.APP_VERSION || '1.0.0',
     app_semantic: process.env.APP_SEMANTIC || '0',
     env: process.env.APP_ENV || 'development',
-    port: process.env.APP_PORT ?? 6001,
+    port: process.env.PORT ?? 6001,
     log: process.env.LOG == "true",
     secret: {
         token: process.env.TOKEN_SECRET || 'qwerty',
