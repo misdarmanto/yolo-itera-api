@@ -4,6 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const routes_1 = require("./apps/routes");
+const config_1 = require("./apps/config");
 const express_1 = __importDefault(require("express"));
 const body_parser_1 = __importDefault(require("body-parser"));
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
@@ -22,5 +23,5 @@ app.use(function (req, res, next) {
 });
 // Router definitions
 app.routes = (0, routes_1.route)(app);
-const PORT = 5000;
+const PORT = config_1.CONFIG.port;
 app.listen(PORT, () => console.log(`listening on ${PORT}`));

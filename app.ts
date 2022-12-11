@@ -22,5 +22,5 @@ app.use(function (req, res, next) {
 // Router definitions
 app.routes = route(app)
 
-const PORT = 5000
+const PORT = CONFIG.port
 app.listen(PORT, () => console.log(`listening on ${PORT}`))
