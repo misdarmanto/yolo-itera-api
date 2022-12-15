@@ -2,10 +2,10 @@
   "name": "project-itera-api",
   "version": "1.0.0",
   "description": "project itera API",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "start": "tsc -p tsconfig.json && node ./api/index.js",
+    "start": "tsc -p tsconfig.json && node ./build/app.js",
     "dev": "nodemon app.ts"
   },
   "keywords": [
