@@ -1,54 +1,35 @@
 import { Response } from "express";
 import { StatusCodes } from "http-status-codes";
-import { Op } from "sequelize";
-import { TrafficsModel } from "../../models/traffics";
-import { UserModel } from "../../models/users";
-import { VehicleModel } from "../../models/vehicles";
-import { Pagination } from "../../utilities/pagination";
 import { ResponseData, ResponseDataAttributes } from "../../utilities/response";
+import { Op } from "sequelize";
+import { VehicleAttributes, VehicleModel } from "../../models/vehicles";
+import { Pagination } from "../../utilities/pagination";
+import { UserModel } from "../../models/users";
+import { requestChecker } from "../../utilities/requestChecker";
 
-export const getListTraffics = async (req: any, res: Response) => {
+export const getListVehicle = async (req: any, res: Response) => {
 	try {
 		const page = new Pagination(+req.query.page || 0, +req.query.size || 10);
-
-		const includeModels = [
-			{
-				model: VehicleModel,
-				where: {
-					deleted: { [Op.eq]: 0 },
-					...(req.query.search && {
-						[Op.or]: [{ name: { [Op.like]: `%${req.query.search}%` } }],
-					}),
-					...(req.query.plate && {
-						[Op.or]: [{ plateNumber: { [Op.like]: `%${req.query.plate}%` } }],
-					}),
-				},
-				attributes: ["name", "plateNumber", "type", "color", "photo", "stnk"],
+		const users = await VehicleModel.findAndCountAll({
+			where: {
+				deleted: { [Op.eq]: 0 },
+				...(req.query.search && {
+					[Op.or]: [{ name: { [Op.like]: `%${req.query.search}%` } }],
+				}),
 			},
-			{
+			include: {
 				model: UserModel,
-				where: {
-					deleted: { [Op.eq]: 0 },
-					...(req.query.search && {
-						[Op.or]: [{ name: { [Op.like]: `%${req.query.search}%` } }],
-					}),
-				},
-				attributes: ["name", "rfid", "photo"],
+				attributes: ["name", "rfid"],
 			},
-		];
-
-		const traffics = await TrafficsModel.findAndCountAll({
-			where: { deleted: { [Op.eq]: 0 } },
 			order: [["id", "desc"]],
 			...(req.query.pagination == "true" && {
 				limit: page.limit,
 				offset: page.offset,
 			}),
-			include: includeModels,
 		});
 
 		const response = <ResponseDataAttributes>ResponseData.default;
-		response.data = page.data(traffics);
+		response.data = page.data(users);
 		return res.status(StatusCodes.OK).json(response);
 	} catch (error: any) {
 		console.log(error.message);
@@ -58,13 +39,26 @@ export const getListTraffics = async (req: any, res: Response) => {
 	}
 };
 
-export const getSingleTrafic = async (req: any, res: Response) => {
+export const getSingleVehicle = async (req: any, res: Response) => {
+	const query = <VehicleAttributes>req.query;
+
+	const emptyField = requestChecker({
+		requireList: ["id"],
+		requestData: query,
+	});
+
+	if (emptyField) {
+		const message = `invalid request parameter! require (${emptyField})`;
+		const response = <ResponseDataAttributes>ResponseData.error(message);
+		return res.status(StatusCodes.BAD_REQUEST).json(response);
+	}
+
 	try {
-		const user = await UserModel.findOne({
+		const vehicle = await VehicleModel.findOne({
 			where: { deleted: { [Op.eq]: 0 }, id: { [Op.eq]: req.query.id } },
 		});
 		const response = <ResponseDataAttributes>ResponseData.default;
-		response.data = user;
+		response.data = vehicle;
 		return res.status(StatusCodes.OK).json(response);
 	} catch (error: any) {
 		console.log(error.message);

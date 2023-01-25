@@ -1,16 +1,16 @@
 import { Response } from "express";
 import { StatusCodes } from "http-status-codes";
-import { Op } from "sequelize";
-import { UserAttributes, UserModel } from "../../models/users";
-import { requestChecker } from "../../utilities/requestChecker";
 import { ResponseData, ResponseDataAttributes } from "../../utilities/response";
+import { Op } from "sequelize";
+import { VehicleAttributes, VehicleModel } from "../../models/vehicles";
+import { requestChecker } from "../../utilities/requestChecker";
 
-export const deleteUser = async (req: any, res: Response) => {
-	const query = <UserAttributes>req.query;
+export const deleteVehicle = async (req: any, res: Response) => {
+	const query = <VehicleAttributes>req.query;
 
 	const emptyField = requestChecker({
 		requireList: ["id"],
-		requestData: req.query,
+		requestData: query,
 	});
 
 	if (emptyField) {
@@ -20,7 +20,7 @@ export const deleteUser = async (req: any, res: Response) => {
 	}
 
 	try {
-		const vehicle = await UserModel.update({ deleted: 1 }, { where: { id: { [Op.eq]: query.id } } });
+		const vehicle = await VehicleModel.update({ deleted: 1 }, { where: { id: { [Op.eq]: query.id } } });
 		const response = <ResponseDataAttributes>ResponseData.default;
 		response.data = vehicle;
 		return res.status(StatusCodes.OK).json(response);

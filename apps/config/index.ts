@@ -2,7 +2,6 @@ import dotenv from "dotenv";
 dotenv.config();
 
 export const CONFIG = {
-	// APP CONFIGURATION
 	app_version: process.env.APP_VERSION || "1.0.0",
 	app_semantic: process.env.APP_SEMANTIC || "0",
 	env: process.env.APP_ENV || "development",

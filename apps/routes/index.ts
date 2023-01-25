@@ -1,9 +1,9 @@
 import express, { Express, Request, Response } from "express";
 import { index } from "../controllers";
 import { VEHICLE } from "../controllers/vehicle";
-import { USER } from "../controllers/users/user";
+import { USER } from "../controllers/users";
 import { middleware } from "../middlewares";
-import { TRAFFICS } from "../controllers/traffics/traffics";
+import { TRAFFIC } from "../controllers/traffic";
 import { STATISTIC } from "../controllers/statistic";
 import { ADMIN } from "../controllers/admin";
 
@@ -25,8 +25,8 @@ export const route = (app: Express) => {
 	const adminRouter = express.Router();
 	app.use("/admin", middleware.useAuthorization, adminRouter);
 	adminRouter.get("/list", (req: Request, res: Response) => ADMIN.list(req, res));
+	adminRouter.post("/register", (req: Request, res: Response) => ADMIN.signUp(req, res));
 	adminRouter.post("/login", (req: Request, res: Response) => ADMIN.login(req, res));
-	adminRouter.post("/register", (req: Request, res: Response) => ADMIN.register(req, res));
 	adminRouter.get("/logout", (req: Request, res: Response) => ADMIN.logout(req, res));
 
 	const vehicleRouter = express.Router();
@@ -38,8 +38,8 @@ export const route = (app: Express) => {
 	vehicleRouter.delete("/", (req: Request, res: Response) => VEHICLE.delete(req, res));
 
 	const trafficRouter = express.Router();
-	app.use("/traffics", middleware.useAuthorization, trafficRouter);
-	trafficRouter.post("/verify", (req: Request, res: Response) => TRAFFICS.verify(req, res));
-	trafficRouter.get("/list", (req: Request, res: Response) => TRAFFICS.list(req, res));
-	trafficRouter.get("/", (req: Request, res: Response) => TRAFFICS.single(req, res));
+	app.use("/traffic", middleware.useAuthorization, trafficRouter);
+	trafficRouter.post("/verify", (req: Request, res: Response) => TRAFFIC.verify(req, res));
+	trafficRouter.get("/list", (req: Request, res: Response) => TRAFFIC.list(req, res));
+	trafficRouter.get("/", (req: Request, res: Response) => TRAFFIC.single(req, res));
 };

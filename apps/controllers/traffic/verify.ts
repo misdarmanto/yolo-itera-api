@@ -1,7 +1,7 @@
 import { Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import { Op } from "sequelize";
-import { TrafficsAttributes, TrafficsModel } from "../../models/traffics";
+import { TrafficAttributes, TrafficModel } from "../../models/traffic";
 import { UserModel } from "../../models/users";
 import { VehicleAttributes, VehicleModel } from "../../models/vehicles";
 import { generateDateTime } from "../../utilities";
@@ -42,7 +42,7 @@ export const verifyVehicle = async (req: any, res: Response) => {
 			return res.status(StatusCodes.NOT_FOUND).json(response);
 		}
 
-		const checkTraffics = await TrafficsModel.findOne({
+		const checkTraffic = await TrafficModel.findOne({
 			where: {
 				deleted: { [Op.eq]: 0 },
 				vehicleId: { [Op.eq]: vehicle.id },
@@ -51,21 +51,21 @@ export const verifyVehicle = async (req: any, res: Response) => {
 			},
 		});
 
-		if (!checkTraffics) {
-			const data = <TrafficsAttributes>{
+		if (!checkTraffic) {
+			const data = <TrafficAttributes>{
 				userId: vehicle.userId,
 				vehicleId: vehicle.id,
 				checkIn: generateDateTime(),
 				checkOut: "waiting",
 				photo: body.photo,
 			};
-			const result = await TrafficsModel.create(data);
+			const result = await TrafficModel.create(data);
 			const response = <ResponseDataAttributes>ResponseData.default;
 			response.data = result;
 			return res.status(StatusCodes.CREATED).json(response);
 		}
 
-		const traffics = await TrafficsModel.update(
+		const traffic = await TrafficModel.update(
 			{ checkOut: generateDateTime() },
 			{
 				where: {
@@ -76,7 +76,7 @@ export const verifyVehicle = async (req: any, res: Response) => {
 			}
 		);
 		const response = <ResponseDataAttributes>ResponseData.default;
-		response.data = traffics;
+		response.data = traffic;
 		return res.status(StatusCodes.OK).json(response);
 	} catch (error: any) {
 		console.log(error.message);

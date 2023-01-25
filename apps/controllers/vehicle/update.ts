@@ -1,16 +1,16 @@
 import { Response } from "express";
 import { StatusCodes } from "http-status-codes";
-import { Op } from "sequelize";
-import { UserAttributes, UserModel } from "../../models/users";
-import { requestChecker } from "../../utilities/requestChecker";
 import { ResponseData, ResponseDataAttributes } from "../../utilities/response";
+import { Op } from "sequelize";
+import { VehicleAttributes, VehicleModel } from "../../models/vehicles";
+import { requestChecker } from "../../utilities/requestChecker";
 
-export const deleteUser = async (req: any, res: Response) => {
-	const query = <UserAttributes>req.query;
+export const updateVehicle = async (req: any, res: Response) => {
+	const body = <VehicleAttributes>req.body;
 
 	const emptyField = requestChecker({
 		requireList: ["id"],
-		requestData: req.query,
+		requestData: body,
 	});
 
 	if (emptyField) {
@@ -20,9 +20,19 @@ export const deleteUser = async (req: any, res: Response) => {
 	}
 
 	try {
-		const vehicle = await UserModel.update({ deleted: 1 }, { where: { id: { [Op.eq]: query.id } } });
+		const newData = {
+			...(body.name && { name: body.name }),
+			...(body.plateNumber && { plateNumber: body.plateNumber }),
+			...(body.type && { type: body.type }),
+			...(body.userId && { userId: body.userId }),
+			...(body.color && { color: body.color }),
+			...(body.photo && { photo: body.photo }),
+		};
+
+		await VehicleModel.update(newData, { where: { id: { [Op.eq]: body.id } } });
+
 		const response = <ResponseDataAttributes>ResponseData.default;
-		response.data = vehicle;
+		response.data = "success";
 		return res.status(StatusCodes.OK).json(response);
 	} catch (error: any) {
 		console.log(error.message);

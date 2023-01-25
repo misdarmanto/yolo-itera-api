@@ -1,15 +1,16 @@
 import { Response } from "express";
 import { StatusCodes } from "http-status-codes";
-import { Op } from "sequelize";
-import { AdminAttributes, AdminModel } from "../../models/admin";
-import { requestChecker } from "../../utilities/requestChecker";
 import { ResponseData, ResponseDataAttributes } from "../../utilities/response";
-import { hashPassword } from "../../utilities/scure_password";
+import { Op } from "sequelize";
+import { VehicleAttributes, VehicleModel } from "../../models/vehicles";
+import { UserModel } from "../../models/users";
+import { requestChecker } from "../../utilities/requestChecker";
 
-export const register = async (req: any, res: Response) => {
-	const body = <AdminAttributes>req.body;
+export const createVehicle = async (req: any, res: Response) => {
+	const body = <VehicleAttributes>req.body;
+
 	const emptyField = requestChecker({
-		requireList: ["name", "email", "password", "role", "photo"],
+		requireList: ["name", "plateNumber", "type", "color", "userId"],
 		requestData: body,
 	});
 
@@ -20,25 +21,19 @@ export const register = async (req: any, res: Response) => {
 	}
 
 	try {
-		const admin = await AdminModel.findOne({
-			raw: true,
-			where: {
-				deleted: { [Op.eq]: 0 },
-				[Op.or]: [{ name: { [Op.eq]: body.name } }, { email: { [Op.eq]: body.email } }],
-			},
+		const isUsersExis = await UserModel.findOne({
+			where: { deleted: { [Op.eq]: 0 }, id: { [Op.eq]: body.userId } },
 		});
 
-		if (admin) {
-			const message = "Email telah terdaftar. Silahkan gunakan email lain.";
+		if (!isUsersExis) {
+			const message = "User belum terdafar, silahkan lakukan registrasi";
 			const response = <ResponseDataAttributes>ResponseData.error(message);
-			return res.status(StatusCodes.BAD_REQUEST).json(response);
+			return res.status(StatusCodes.FORBIDDEN).json(response);
 		}
 
-		body.password = hashPassword(body.password);
-		await AdminModel.create(body);
-
+		const vehicle = await VehicleModel.create(body);
 		const response = <ResponseDataAttributes>ResponseData.default;
-		response.data = "registration sucsess";
+		response.data = vehicle;
 		return res.status(StatusCodes.CREATED).json(response);
 	} catch (error: any) {
 		console.log(error.message);

@@ -1,11 +1,11 @@
-import { register } from "ts-node";
 import { getAdminList } from "./get";
 import { login } from "./login";
 import { logout } from "./logout";
+import { signUp } from "./signUp";
 
 export const ADMIN = {
 	list: getAdminList,
 	login: login,
 	logout: logout,
-	register: register,
+	signUp: signUp,
 };
