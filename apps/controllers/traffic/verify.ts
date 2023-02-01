@@ -11,8 +11,8 @@ import { ResponseData, ResponseDataAttributes } from "../../utilities/response";
 export const verifyVehicle = async (req: any, res: Response) => {
 	const body = <VehicleAttributes>req.body;
 	const emptyField = requestChecker({
-		requireList: ["x-plate-number", "x-rfid", "photo"],
-		requestData: { ...req.body, ...req.headers },
+		requireList: ["plateNumber", "rfid", "photo"],
+		requestData: { ...req.body, ...req.query },
 	});
 
 	if (emptyField) {
@@ -24,14 +24,14 @@ export const verifyVehicle = async (req: any, res: Response) => {
 	try {
 		const where = {
 			deleted: { [Op.eq]: 0 },
-			plateNumber: { [Op.eq]: req.header("x-plate-number") },
+			plateNumber: { [Op.eq]: req.query.plateNumber },
 		};
 
 		const includeModel = {
 			model: UserModel,
 			where: {
 				deleted: { [Op.eq]: 0 },
-				rfid: { [Op.eq]: req.header("x-rfid") },
+				rfid: { [Op.eq]: req.query.rfid },
 			},
 		};
 		const vehicle = await VehicleModel.findOne({ where: where, include: includeModel });

@@ -20,6 +20,20 @@ export const deleteUser = async (req: any, res: Response) => {
 	}
 
 	try {
+		const user = await UserModel.findOne({
+			raw: true,
+			where: {
+				deleted: { [Op.eq]: 0 },
+				email: { [Op.eq]: query.id },
+			},
+		});
+
+		if (!user) {
+			const message = "User not found!";
+			const response = <ResponseDataAttributes>ResponseData.error(message);
+			return res.status(StatusCodes.NOT_FOUND).json(response);
+		}
+
 		await UserModel.update({ deleted: 1 }, { where: { id: { [Op.eq]: query.id } } });
 		const response = <ResponseDataAttributes>ResponseData.default;
 		response.data = "user has been deleted";

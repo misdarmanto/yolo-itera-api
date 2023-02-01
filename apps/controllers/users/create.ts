@@ -9,7 +9,7 @@ export const createUser = async (req: any, res: Response) => {
 	const body = <UserAttributes>req.body;
 
 	const emptyField = requestChecker({
-		requireList: ["name", "email", "phone"],
+		requireList: ["name", "email", "phone", "registerAs", "photoIdentity", "photo"],
 		requestData: body,
 	});
 

@@ -5,6 +5,7 @@ import { TrafficModel } from "../../models/traffic";
 import { UserModel } from "../../models/users";
 import { VehicleModel } from "../../models/vehicles";
 import { Pagination } from "../../utilities/pagination";
+import { requestChecker } from "../../utilities/requestChecker";
 import { ResponseData, ResponseDataAttributes } from "../../utilities/response";
 
 export const getListTraffic = async (req: any, res: Response) => {
@@ -59,12 +60,46 @@ export const getListTraffic = async (req: any, res: Response) => {
 };
 
 export const getSingleTraffic = async (req: any, res: Response) => {
+	const emptyField = requestChecker({
+		requireList: ["id"],
+		requestData: req.query,
+	});
+
+	if (emptyField) {
+		const message = `invalid request parameter! require (${emptyField})`;
+		const response = <ResponseDataAttributes>ResponseData.error(message);
+		return res.status(StatusCodes.BAD_REQUEST).json(response);
+	}
+
 	try {
-		const user = await UserModel.findOne({
+		const traffic = await TrafficModel.findOne({
 			where: { deleted: { [Op.eq]: 0 }, id: { [Op.eq]: req.query.id } },
+			include: [
+				{
+					model: VehicleModel,
+					where: {
+						deleted: { [Op.eq]: 0 },
+					},
+					attributes: ["name", "plateNumber", "type", "color", "photo", "stnk"],
+				},
+				{
+					model: UserModel,
+					where: {
+						deleted: { [Op.eq]: 0 },
+					},
+					attributes: ["name", "rfid", "photo"],
+				},
+			],
 		});
+
+		if (!traffic) {
+			const message = "not found";
+			const response = <ResponseDataAttributes>ResponseData.error(message);
+			return res.status(StatusCodes.NOT_FOUND).json(response);
+		}
+
 		const response = <ResponseDataAttributes>ResponseData.default;
-		response.data = user;
+		response.data = traffic;
 		return res.status(StatusCodes.OK).json(response);
 	} catch (error: any) {
 		console.log(error.message);
