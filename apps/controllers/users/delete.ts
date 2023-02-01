@@ -20,9 +20,9 @@ export const deleteUser = async (req: any, res: Response) => {
 	}
 
 	try {
-		const vehicle = await UserModel.update({ deleted: 1 }, { where: { id: { [Op.eq]: query.id } } });
+		await UserModel.update({ deleted: 1 }, { where: { id: { [Op.eq]: query.id } } });
 		const response = <ResponseDataAttributes>ResponseData.default;
-		response.data = vehicle;
+		response.data = "user has been deleted";
 		return res.status(StatusCodes.OK).json(response);
 	} catch (error: any) {
 		console.log(error.message);

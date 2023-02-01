@@ -13,11 +13,13 @@ export const signUp = async (req: any, res: Response) => {
 		requireList: ["name", "email", "password", "role", "photo"],
 		requestData: body,
 	});
+
 	if (emptyField) {
 		const message = `invalid request parameter! require (${emptyField})`;
 		const response = <ResponseDataAttributes>ResponseData.error(message);
 		return res.status(StatusCodes.BAD_REQUEST).json(response);
 	}
+
 	try {
 		const admin = await AdminModel.findOne({
 			raw: true,
@@ -28,7 +30,7 @@ export const signUp = async (req: any, res: Response) => {
 		});
 
 		if (admin) {
-			const message = "Email telah terdaftar. Silahkan gunakan email lain.";
+			const message = `Email ${admin.email} sudah terdaftar. Silahkan gunakan email lain.`;
 			const response = <ResponseDataAttributes>ResponseData.error(message);
 			return res.status(StatusCodes.BAD_REQUEST).json(response);
 		}

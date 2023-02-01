@@ -31,7 +31,7 @@ export const updateUser = async (req: any, res: Response) => {
 
 		await UserModel.update(newData, { where: { id: { [Op.eq]: body.id } } });
 		const response = <ResponseDataAttributes>ResponseData.default;
-		response.data = "berhasil di rubah";
+		response.data = "user has been updated.";
 		return res.status(StatusCodes.OK).json(response);
 	} catch (error: any) {
 		console.log(error.message);

@@ -38,8 +38,8 @@ export const createUser = async (req: any, res: Response) => {
 		await UserModel.create(body);
 
 		const response = <ResponseDataAttributes>ResponseData.default;
-		response.data = "registration sucsess";
-		return res.status(StatusCodes.OK).json(response);
+		response.data = "user has been created";
+		return res.status(StatusCodes.CREATED).json(response);
 	} catch (error: any) {
 		console.log(error.message);
 		const message = `unable to process request! error ${error.message}`;

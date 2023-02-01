@@ -1,16 +1,16 @@
 import { Response } from "express";
 import { StatusCodes } from "http-status-codes";
-import { ResponseData, ResponseDataAttributes } from "../../utilities/response";
 import { Op } from "sequelize";
-import { VehicleAttributes, VehicleModel } from "../../models/vehicles";
+import { AdminAttributes, AdminModel } from "../../models/admin";
 import { requestChecker } from "../../utilities/requestChecker";
+import { ResponseData, ResponseDataAttributes } from "../../utilities/response";
 
-export const deleteVehicle = async (req: any, res: Response) => {
-	const query = <VehicleAttributes>req.query;
+export const updateAdmin = async (req: any, res: Response) => {
+	const body = <AdminAttributes>req.body;
 
 	const emptyField = requestChecker({
 		requireList: ["id"],
-		requestData: query,
+		requestData: body,
 	});
 
 	if (emptyField) {
@@ -20,9 +20,16 @@ export const deleteVehicle = async (req: any, res: Response) => {
 	}
 
 	try {
-		await VehicleModel.update({ deleted: 1 }, { where: { id: { [Op.eq]: query.id } } });
+		const newData = <AdminAttributes>{
+			...(body.name && { name: body.name }),
+			...(body.email && { email: body.email }),
+			...(body.role && { registerAs: body.role }),
+			...(body.password && { type: body.password }),
+		};
+
+		await AdminModel.update(newData, { where: { id: { [Op.eq]: body.id } } });
 		const response = <ResponseDataAttributes>ResponseData.default;
-		response.data = "vehicle has been deleted.";
+		response.data = "admin has been updated.";
 		return res.status(StatusCodes.OK).json(response);
 	} catch (error: any) {
 		console.log(error.message);

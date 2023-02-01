@@ -32,7 +32,7 @@ export const updateVehicle = async (req: any, res: Response) => {
 		await VehicleModel.update(newData, { where: { id: { [Op.eq]: body.id } } });
 
 		const response = <ResponseDataAttributes>ResponseData.default;
-		response.data = "success";
+		response.data = "vehicle has been updated.";
 		return res.status(StatusCodes.OK).json(response);
 	} catch (error: any) {
 		console.log(error.message);

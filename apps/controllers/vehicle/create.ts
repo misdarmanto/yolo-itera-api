@@ -31,9 +31,9 @@ export const createVehicle = async (req: any, res: Response) => {
 			return res.status(StatusCodes.FORBIDDEN).json(response);
 		}
 
-		const vehicle = await VehicleModel.create(body);
+		await VehicleModel.create(body);
 		const response = <ResponseDataAttributes>ResponseData.default;
-		response.data = vehicle;
+		response.data = "vehicle has been created.";
 		return res.status(StatusCodes.CREATED).json(response);
 	} catch (error: any) {
 		console.log(error.message);

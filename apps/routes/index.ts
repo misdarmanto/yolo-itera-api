@@ -24,6 +24,8 @@ export const route = (app: Express) => {
 
 	const adminRouter = express.Router();
 	app.use("/admin", middleware.useAuthorization, adminRouter);
+	adminRouter.patch("/", (req: Request, res: Response) => ADMIN.update(req, res));
+	adminRouter.delete("/", (req: Request, res: Response) => ADMIN.delete(req, res));
 	adminRouter.get("/list", (req: Request, res: Response) => ADMIN.list(req, res));
 	adminRouter.post("/register", (req: Request, res: Response) => ADMIN.signUp(req, res));
 	adminRouter.post("/login", (req: Request, res: Response) => ADMIN.login(req, res));
