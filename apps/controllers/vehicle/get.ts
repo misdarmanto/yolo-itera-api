@@ -55,8 +55,15 @@ export const getSingleVehicle = async (req: any, res: Response) => {
 
 	try {
 		const vehicle = await VehicleModel.findOne({
-			where: { deleted: { [Op.eq]: 0 }, id: { [Op.eq]: req.query.id } },
+			where: { deleted: { [Op.eq]: 0 }, id: { [Op.eq]: query.id } },
 		});
+
+		if (!vehicle) {
+			const message = `vehicle not found!`;
+			const response = <ResponseDataAttributes>ResponseData.error(message);
+			return res.status(StatusCodes.NOT_FOUND).json(response);
+		}
+
 		const response = <ResponseDataAttributes>ResponseData.default;
 		response.data = vehicle;
 		return res.status(StatusCodes.OK).json(response);

@@ -93,7 +93,7 @@ export const getSingleTraffic = async (req: any, res: Response) => {
 		});
 
 		if (!traffic) {
-			const message = "not found";
+			const message = "traffic not found";
 			const response = <ResponseDataAttributes>ResponseData.error(message);
 			return res.status(StatusCodes.NOT_FOUND).json(response);
 		}

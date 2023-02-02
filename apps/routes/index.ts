@@ -33,8 +33,8 @@ export const route = (app: Express) => {
 
 	const vehicleRouter = express.Router();
 	app.use("/vehicles", middleware.useAuthorization, vehicleRouter);
-	vehicleRouter.get("/list", (req: Request, res: Response) => VEHICLE.list(req, res));
 	vehicleRouter.get("/", (req: Request, res: Response) => VEHICLE.single(req, res));
+	vehicleRouter.get("/list", (req: Request, res: Response) => VEHICLE.list(req, res));
 	vehicleRouter.post("/", (req: Request, res: Response) => VEHICLE.create(req, res));
 	vehicleRouter.patch("/", (req: Request, res: Response) => VEHICLE.update(req, res));
 	vehicleRouter.delete("/", (req: Request, res: Response) => VEHICLE.delete(req, res));

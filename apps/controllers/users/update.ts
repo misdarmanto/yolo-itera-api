@@ -20,6 +20,16 @@ export const updateUser = async (req: any, res: Response) => {
 	}
 
 	try {
+		const user = await UserModel.findOne({
+			where: { deleted: { [Op.eq]: 0 }, id: { [Op.eq]: body.id } },
+		});
+
+		if (!user) {
+			const message = `user not found!`;
+			const response = <ResponseDataAttributes>ResponseData.error(message);
+			return res.status(StatusCodes.NOT_FOUND).json(response);
+		}
+
 		const newData = <UserAttributes>{
 			...(body.name && { name: body.name }),
 			...(body.email && { email: body.email }),

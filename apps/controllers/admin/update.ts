@@ -20,6 +20,16 @@ export const updateAdmin = async (req: any, res: Response) => {
 	}
 
 	try {
+		const adminCheck = await AdminModel.findOne({
+			where: { deleted: { [Op.eq]: 0 }, id: { [Op.eq]: body.id } },
+		});
+
+		if (!adminCheck) {
+			const message = `Admin not found!`;
+			const response = <ResponseDataAttributes>ResponseData.error(message);
+			return res.status(StatusCodes.NOT_FOUND).json(response);
+		}
+
 		const newData = <AdminAttributes>{
 			...(body.name && { name: body.name }),
 			...(body.email && { email: body.email }),

@@ -20,6 +20,16 @@ export const updateVehicle = async (req: any, res: Response) => {
 	}
 
 	try {
+		const vehicle = await VehicleModel.findOne({
+			where: { deleted: { [Op.eq]: 0 }, id: { [Op.eq]: body.id } },
+		});
+
+		if (!vehicle) {
+			const message = `vehicle not found!`;
+			const response = <ResponseDataAttributes>ResponseData.error(message);
+			return res.status(StatusCodes.NOT_FOUND).json(response);
+		}
+
 		const newData = {
 			...(body.name && { name: body.name }),
 			...(body.plateNumber && { plateNumber: body.plateNumber }),

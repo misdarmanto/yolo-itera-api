@@ -20,6 +20,16 @@ export const deleteAdmin = async (req: any, res: Response) => {
 	}
 
 	try {
+		const adminCheck = await AdminModel.findOne({
+			where: { deleted: { [Op.eq]: 0 }, id: { [Op.eq]: query.id } },
+		});
+
+		if (!adminCheck) {
+			const message = `Admin not found!`;
+			const response = <ResponseDataAttributes>ResponseData.error(message);
+			return res.status(StatusCodes.NOT_FOUND).json(response);
+		}
+
 		await AdminModel.update({ deleted: 1 }, { where: { id: { [Op.eq]: query.id } } });
 		const response = <ResponseDataAttributes>ResponseData.default;
 		response.data = "admin has been deleted";
