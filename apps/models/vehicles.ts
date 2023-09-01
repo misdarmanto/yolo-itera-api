@@ -4,62 +4,62 @@ import { UserModel } from "./users";
 import { ZygoteAttributes, ZygoteModel } from "./zygote";
 
 export interface VehicleAttributes extends ZygoteAttributes {
-    plateNumber: string;
-    type: string;
-    userId: number;
-    name: string;
-    color: string;
-    photo: string;
-    stnk: string;
+	plateNumber: string;
+	type: string;
+	userId: number;
+	name: string;
+	color: string;
+	photo: string;
 }
 
-type VehicleCreationAttributes = Optional<VehicleAttributes, "id" | "createdOn" | "modifiedOn">;
+type VehicleCreationAttributes = Optional<
+	VehicleAttributes,
+	"id" | "createdOn" | "modifiedOn"
+>;
 
-interface VehicleInstance extends Model<VehicleAttributes, VehicleCreationAttributes>, VehicleAttributes {}
+interface VehicleInstance
+	extends Model<VehicleAttributes, VehicleCreationAttributes>,
+		VehicleAttributes {}
 
 export const VehicleModel = sequelize.define<VehicleInstance>(
-    "vehicles",
-    {
-        ...ZygoteModel,
-        userId: {
-            type: DataTypes.INTEGER,
-            allowNull: false,
-        },
-        plateNumber: {
-            type: DataTypes.STRING,
-            allowNull: false,
-        },
-        type: {
-            type: DataTypes.STRING,
-            allowNull: false,
-        },
-        name: {
-            type: DataTypes.STRING,
-            allowNull: false,
-        },
-        color: {
-            type: DataTypes.STRING,
-            allowNull: false,
-        },
-        photo: {
-            type: DataTypes.STRING,
-            allowNull: false,
-        },
-        stnk: {
-            type: DataTypes.STRING,
-            allowNull: false,
-        },
-    },
-    {
-        ...sequelize,
-        timestamps: false,
-        tableName: "vehicles",
-        deletedAt: false,
-        paranoid: true,
-        underscored: true,
-        freezeTableName: true,
-        engine: "InnoDB",
-    }
+	"vehicles",
+	{
+		...ZygoteModel,
+		userId: {
+			type: DataTypes.INTEGER,
+			allowNull: false,
+		},
+		plateNumber: {
+			type: DataTypes.STRING,
+			allowNull: false,
+		},
+		type: {
+			type: DataTypes.STRING,
+			allowNull: false,
+		},
+		name: {
+			type: DataTypes.STRING,
+			allowNull: false,
+		},
+		color: {
+			type: DataTypes.STRING,
+			allowNull: false,
+		},
+		photo: {
+			type: DataTypes.STRING,
+			allowNull: false,
+		},
+	},
+	{
+		...sequelize,
+		timestamps: false,
+		tableName: "vehicles",
+		deletedAt: false,
+		paranoid: true,
+		underscored: true,
+		freezeTableName: true,
+		engine: "InnoDB",
+	}
 );
 
 UserModel.hasMany(VehicleModel, { sourceKey: "id", foreignKey: "user_id" });

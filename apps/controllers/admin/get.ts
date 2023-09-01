@@ -7,6 +7,7 @@ import { requestChecker } from "../../utilities/requestChecker";
 import { ResponseData, ResponseDataAttributes } from "../../utilities/response";
 
 export const getAdminList = async (req: any, res: Response) => {
+	console.log(req.headers);
 	const emptyField = requestChecker({
 		requireList: ["x-user-id"],
 		requestData: req.headers,

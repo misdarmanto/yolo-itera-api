@@ -12,7 +12,7 @@ export const verifyVehicle = async (req: any, res: Response) => {
 	const body = <VehicleAttributes>req.body;
 	const emptyField = requestChecker({
 		requireList: ["plateNumber", "rfid", "photo"],
-		requestData: { ...req.body, ...req.query },
+		requestData: req.body,
 	});
 
 	if (emptyField) {
@@ -24,20 +24,24 @@ export const verifyVehicle = async (req: any, res: Response) => {
 	try {
 		const where = {
 			deleted: { [Op.eq]: 0 },
-			plateNumber: { [Op.eq]: req.query.plateNumber },
+			plateNumber: { [Op.eq]: req.body.plateNumber },
 		};
 
 		const includeModel = {
 			model: UserModel,
 			where: {
 				deleted: { [Op.eq]: 0 },
-				rfid: { [Op.eq]: req.query.rfid },
+				rfid: { [Op.eq]: req.body.rfid },
 			},
 		};
-		const vehicle = await VehicleModel.findOne({ where: where, include: includeModel });
+		const vehicle = await VehicleModel.findOne({
+			where: where,
+			include: includeModel,
+		});
 
 		if (!vehicle) {
-			const message = "Jenis kendaraan tidak ditemukan. Silahkan lakukan pendaftaran terlebih dahulu.";
+			const message =
+				"Jenis kendaraan tidak ditemukan. Silahkan lakukan pendaftaran terlebih dahulu.";
 			const response = <ResponseDataAttributes>ResponseData.error(message);
 			return res.status(StatusCodes.NOT_FOUND).json(response);
 		}

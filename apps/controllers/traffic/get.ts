@@ -24,7 +24,7 @@ export const getListTraffic = async (req: any, res: Response) => {
 						[Op.or]: [{ plateNumber: { [Op.like]: `%${req.query.plate}%` } }],
 					}),
 				},
-				attributes: ["name", "plateNumber", "type", "color", "photo", "stnk"],
+				attributes: ["name", "plateNumber", "type", "color", "photo"],
 			},
 			{
 				model: UserModel,
@@ -80,7 +80,7 @@ export const getSingleTraffic = async (req: any, res: Response) => {
 					where: {
 						deleted: { [Op.eq]: 0 },
 					},
-					attributes: ["name", "plateNumber", "type", "color", "photo", "stnk"],
+					attributes: ["name", "plateNumber", "type", "color", "photo"],
 				},
 				{
 					model: UserModel,

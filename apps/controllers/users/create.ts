@@ -9,7 +9,15 @@ export const createUser = async (req: any, res: Response) => {
 	const body = <UserAttributes>req.body;
 
 	const emptyField = requestChecker({
-		requireList: ["name", "email", "phone", "registerAs", "photoIdentity", "photo"],
+		requireList: [
+			"name",
+			"email",
+			"phone",
+			"registerAs",
+			"photoIdentity",
+			"photo",
+			"rfid",
+		],
 		requestData: body,
 	});
 
@@ -34,7 +42,6 @@ export const createUser = async (req: any, res: Response) => {
 			return res.status(StatusCodes.BAD_REQUEST).json(response);
 		}
 
-		body.rfid = Math.floor(Math.random() * 10000000);
 		await UserModel.create(body);
 
 		const response = <ResponseDataAttributes>ResponseData.default;
