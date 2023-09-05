@@ -5,28 +5,23 @@ const { ZygoteModel } = require("../zygote");
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
 	async up(queryInterface, Sequelize) {
-		await queryInterface.createTable("department", {
+		await queryInterface.createTable("user_sessions", {
 			...ZygoteModel,
-			department_id: {
+			user_id: {
 				type: Sequelize.STRING,
 				allowNull: false,
 			},
-			department_name: {
+			session: {
 				type: Sequelize.STRING,
 				allowNull: false,
 			},
-			department_email: {
+			expired_on: {
 				type: Sequelize.STRING,
 				allowNull: false,
-			},
-			department_is_registered: {
-				type: Sequelize.BOOLEAN,
-				allowNull: true,
-				defaultValue: false,
 			},
 		});
 	},
 	async down(queryInterface, Sequelize) {
-		await queryInterface.dropTable("department");
+		await queryInterface.dropTable("user_sessions");
 	},
 };
