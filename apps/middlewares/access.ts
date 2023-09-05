@@ -15,7 +15,7 @@ export const useAuthorization = (req: Request, res: Response, next: NextFunction
 		const credentials = Buffer.from(base64Credentials || ":", "base64").toString("ascii");
 		const [username, password] = credentials.split(":");
 
-		if (username != CONFIG.authorization.username || password != CONFIG.authorization.passsword) {
+		if (username !== CONFIG.authorization.username || password !== CONFIG.authorization.passsword) {
 			const message = "Invalid Authorization.";
 			const response = <ResponseDataAttributes>ResponseData.error(message);
 			return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(response);

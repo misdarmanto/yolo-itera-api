@@ -2,41 +2,30 @@ import { Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import { Op } from "sequelize";
 import { TrafficAttributes, TrafficModel } from "../../models/traffic";
-import { UserModel } from "../../models/users";
+import { UserAttributes, UserModel } from "../../models/users";
 import { VehicleAttributes, VehicleModel } from "../../models/vehicles";
 import { generateDateTime } from "../../utilities";
-import { requestChecker } from "../../utilities/requestChecker";
 import { ResponseData, ResponseDataAttributes } from "../../utilities/response";
 
-export const verifyVehicle = async (req: any, res: Response) => {
-	const body = <VehicleAttributes>req.body;
-	const emptyField = requestChecker({
-		requireList: ["plateNumber", "rfid", "photo"],
-		requestData: req.body,
-	});
+interface IBodyRequest extends VehicleAttributes, UserAttributes {}
 
-	if (emptyField) {
-		const message = `invalid request parameter! require (${emptyField})`;
-		const response = <ResponseDataAttributes>ResponseData.error(message);
-		return res.status(StatusCodes.BAD_REQUEST).json(response);
-	}
+export const verifyVehicle = async (req: any, res: Response) => {
+	const bodyRequest = <IBodyRequest>req.body;
 
 	try {
-		const where = {
-			deleted: { [Op.eq]: 0 },
-			plateNumber: { [Op.eq]: req.body.plateNumber },
-		};
-
-		const includeModel = {
-			model: UserModel,
+		
+		const vehicle = await VehicleModel.findOne({
 			where: {
 				deleted: { [Op.eq]: 0 },
-				rfid: { [Op.eq]: req.body.rfid },
+				plateNumber: { [Op.eq]: bodyRequest.plateNumber },
 			},
-		};
-		const vehicle = await VehicleModel.findOne({
-			where: where,
-			include: includeModel,
+			include:  {
+				model: UserModel,
+				where: {
+					deleted: { [Op.eq]: 0 },
+					rfid: { [Op.eq]: bodyRequest.rfid },
+				}
+			},
 		});
 
 		if (!vehicle) {
@@ -51,7 +40,7 @@ export const verifyVehicle = async (req: any, res: Response) => {
 				deleted: { [Op.eq]: 0 },
 				vehicleId: { [Op.eq]: vehicle.id },
 				userId: { [Op.eq]: vehicle.userId },
-				checkOut: { [Op.eq]: "waiting" },
+				checkOut: { [Op.eq]: "waitinxsg" },
 			},
 		});
 
@@ -61,15 +50,15 @@ export const verifyVehicle = async (req: any, res: Response) => {
 				vehicleId: vehicle.id,
 				checkIn: generateDateTime(),
 				checkOut: "waiting",
-				photo: body.photo,
+				photo: bodyRequest.photo,
 			};
 			const result = await TrafficModel.create(data);
 			const response = <ResponseDataAttributes>ResponseData.default;
-			response.data = result;
+			response.data = {message : "succsess"};
 			return res.status(StatusCodes.CREATED).json(response);
 		}
 
-		const traffic = await TrafficModel.update(
+		await TrafficModel.update(
 			{ checkOut: generateDateTime() },
 			{
 				where: {
@@ -80,7 +69,7 @@ export const verifyVehicle = async (req: any, res: Response) => {
 			}
 		);
 		const response = <ResponseDataAttributes>ResponseData.default;
-		response.data = traffic;
+		response.data = {message : "succsess"};
 		return res.status(StatusCodes.OK).json(response);
 	} catch (error: any) {
 		console.log(error.message);
