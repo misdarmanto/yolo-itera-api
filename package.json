@@ -6,7 +6,9 @@
 	"scripts": {
 		"build": "tsc",
 		"start": "tsc && node ./build/app.js",
-		"dev": "nodemon app.ts"
+		"dev": "nodemon app.ts",
+		"migrate:up": "npx sequelize-cli db:migrate",
+		"migrate:undo": "npx sequelize-cli db:migrate:undo"
 	},
 	"keywords": [
 		"api",
@@ -31,6 +33,7 @@
 		"path": "^0.12.7",
 		"redis": "^3.1.2",
 		"sequelize": "^6.25.7",
+		"sequelize-cli": "^6.6.1",
 		"ts-node": "^10.5.0",
 		"uuid": "^8.3.2"
 	},

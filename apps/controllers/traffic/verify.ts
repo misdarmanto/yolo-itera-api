@@ -2,29 +2,33 @@ import { Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import { Op } from "sequelize";
 import { TrafficAttributes, TrafficModel } from "../../models/traffic";
-import { UserAttributes, UserModel } from "../../models/users";
-import { VehicleAttributes, VehicleModel } from "../../models/vehicles";
+import { UserModel } from "../../models/users";
+import { VehicleModel } from "../../models/vehicles";
 import { generateDateTime } from "../../utilities";
 import { ResponseData, ResponseDataAttributes } from "../../utilities/response";
 
-interface IBodyRequest extends VehicleAttributes, UserAttributes {}
+interface IBodyRequestModel {
+	plateNumber: string;
+	rfidCard: string;
+	rfidLongDistance: string;
+	vehicleImage: string;
+}
 
 export const verifyVehicle = async (req: any, res: Response) => {
-	const bodyRequest = <IBodyRequest>req.body;
+	const bodyRequest = <IBodyRequestModel>req.body;
 
 	try {
-		
 		const vehicle = await VehicleModel.findOne({
 			where: {
 				deleted: { [Op.eq]: 0 },
 				plateNumber: { [Op.eq]: bodyRequest.plateNumber },
 			},
-			include:  {
+			include: {
 				model: UserModel,
 				where: {
 					deleted: { [Op.eq]: 0 },
-					rfid: { [Op.eq]: bodyRequest.rfid },
-				}
+					rfid: { [Op.eq]: bodyRequest.rfidCard },
+				},
 			},
 		});
 
@@ -40,7 +44,7 @@ export const verifyVehicle = async (req: any, res: Response) => {
 				deleted: { [Op.eq]: 0 },
 				vehicleId: { [Op.eq]: vehicle.id },
 				userId: { [Op.eq]: vehicle.userId },
-				checkOut: { [Op.eq]: "waitinxsg" },
+				checkOut: { [Op.eq]: "waiting" },
 			},
 		});
 
@@ -50,11 +54,11 @@ export const verifyVehicle = async (req: any, res: Response) => {
 				vehicleId: vehicle.id,
 				checkIn: generateDateTime(),
 				checkOut: "waiting",
-				photo: bodyRequest.photo,
+				photo: bodyRequest.vehicleImage,
 			};
 			const result = await TrafficModel.create(data);
 			const response = <ResponseDataAttributes>ResponseData.default;
-			response.data = {message : "succsess"};
+			response.data = { message: "succsess" };
 			return res.status(StatusCodes.CREATED).json(response);
 		}
 
@@ -69,7 +73,7 @@ export const verifyVehicle = async (req: any, res: Response) => {
 			}
 		);
 		const response = <ResponseDataAttributes>ResponseData.default;
-		response.data = {message : "succsess"};
+		response.data = { message: "succsess" };
 		return res.status(StatusCodes.OK).json(response);
 	} catch (error: any) {
 		console.log(error.message);

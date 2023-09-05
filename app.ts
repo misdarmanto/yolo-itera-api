@@ -1,5 +1,5 @@
 import { route } from "./apps/routes";
-import { CONFIG } from "./apps/config";
+import { CONFIG } from "./apps/configs";
 import express, { Express } from "express";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
@@ -13,7 +13,10 @@ app.use(cookieParser());
 
 app.use(function (req, res, next) {
 	res.setHeader("Access-Control-Allow-Origin", "*");
-	res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, PATCH, DELETE");
+	res.setHeader(
+		"Access-Control-Allow-Methods",
+		"GET, POST, OPTIONS, PUT, PATCH, DELETE"
+	);
 	res.setHeader(
 		"Access-Control-Allow-Headers",
 		"Origin, X-Requested-With, content-type, Authorization, Content-Type"

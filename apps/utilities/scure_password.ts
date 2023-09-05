@@ -1,8 +1,8 @@
-import { CONFIG } from "../config";
+import { CONFIG } from "../configs";
 
-export function hashPassword (password: string) {
-    return require("crypto")
-    .createHash("sha1")
-    .update(password + CONFIG.secret.password_encryption)
-    .digest("hex");
+export function hashPassword(password: string) {
+	return require("crypto")
+		.createHash("sha1")
+		.update(password + CONFIG.secret.passwordEncryption)
+		.digest("hex");
 }
