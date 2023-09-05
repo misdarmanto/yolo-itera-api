@@ -42,19 +42,19 @@ export const verifyVehicle = async (req: any, res: Response) => {
 		const checkTraffic = await TrafficModel.findOne({
 			where: {
 				deleted: { [Op.eq]: 0 },
-				vehicleId: { [Op.eq]: vehicle.id },
-				userId: { [Op.eq]: vehicle.userId },
-				checkOut: { [Op.eq]: "waiting" },
+				trafficVehicleId: { [Op.eq]: vehicle.id },
+				trafficUserId: { [Op.eq]: vehicle.userId },
+				trafficVehicleCheckOut: { [Op.eq]: "waiting" },
 			},
 		});
 
 		if (!checkTraffic) {
 			const data = <TrafficAttributes>{
-				userId: vehicle.userId,
-				vehicleId: vehicle.id,
-				checkIn: generateDateTime(),
-				checkOut: "waiting",
-				photo: bodyRequest.vehicleImage,
+				trafficUserId: vehicle.userId,
+				trafficVehicleId: vehicle.id,
+				trafficVehicleCheckIn: generateDateTime(),
+				trafficVehicleCheckOut: "waiting",
+				trafficVehicleImage: bodyRequest.vehicleImage,
 			};
 			const result = await TrafficModel.create(data);
 			const response = <ResponseDataAttributes>ResponseData.default;
@@ -63,12 +63,12 @@ export const verifyVehicle = async (req: any, res: Response) => {
 		}
 
 		await TrafficModel.update(
-			{ checkOut: generateDateTime() },
+			{ trafficVehicleCheckOut: generateDateTime() },
 			{
 				where: {
-					vehicleId: { [Op.eq]: vehicle.id },
-					userId: { [Op.eq]: vehicle.userId },
-					checkOut: { [Op.eq]: "waiting" },
+					trafficVehicleId: { [Op.eq]: vehicle.id },
+					trafficUserId: { [Op.eq]: vehicle.userId },
+					trafficVehicleCheckIn: { [Op.eq]: "waiting" },
 				},
 			}
 		);

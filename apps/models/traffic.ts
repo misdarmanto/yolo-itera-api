@@ -5,39 +5,43 @@ import { VehicleModel } from "./vehicles";
 import { ZygoteAttributes, ZygoteModel } from "./zygote";
 
 export interface TrafficAttributes extends ZygoteAttributes {
-	vehicleId: number;
-	userId: number;
-	checkIn: string;
-	checkOut: string;
-	photo: string;
+	trafficVehicleId: number;
+	trafficUserId: number;
+	trafficVehicleCheckIn: string;
+	trafficVehicleCheckOut: string;
+	trafficVehicleImage: string;
 }
 
-type TrafficCreationAttributes = Optional<TrafficAttributes, "id" | "createdOn" | "modifiedOn">;
+type TrafficCreationAttributes = Optional<
+	TrafficAttributes,
+	"id" | "createdOn" | "modifiedOn"
+>;
 
-interface TrafficInstance extends Model<TrafficAttributes, TrafficCreationAttributes>, TrafficAttributes {}
+interface TrafficInstance
+	extends Model<TrafficAttributes, TrafficCreationAttributes>,
+		TrafficAttributes {}
 
 export const TrafficModel = sequelize.define<TrafficInstance>(
 	"traffic",
 	{
 		...ZygoteModel,
-		userId: {
-			type: DataTypes.INTEGER,
+		trafficUserId: {
+			type: DataTypes.NUMBER,
 			allowNull: false,
 		},
-		vehicleId: {
-			type: DataTypes.INTEGER,
+		trafficVehicleId: {
+			type: DataTypes.NUMBER,
 			allowNull: false,
 		},
-		checkIn: {
+		trafficVehicleCheckIn: {
 			type: DataTypes.STRING,
 			allowNull: false,
 		},
-		checkOut: {
+		trafficVehicleCheckOut: {
 			type: DataTypes.STRING,
 			allowNull: false,
 		},
-
-		photo: {
+		trafficVehicleImage: {
 			type: DataTypes.STRING,
 			allowNull: false,
 		},
@@ -54,5 +58,5 @@ export const TrafficModel = sequelize.define<TrafficInstance>(
 	}
 );
 
-TrafficModel.hasOne(VehicleModel, { sourceKey: "vehicleId", foreignKey: "id" });
-TrafficModel.hasOne(UserModel, { sourceKey: "userId", foreignKey: "id" });
+TrafficModel.hasOne(VehicleModel, { sourceKey: "trafficVehicleId", foreignKey: "id" });
+TrafficModel.hasOne(UserModel, { sourceKey: "trafficUserId", foreignKey: "id" });
