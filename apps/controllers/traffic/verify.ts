@@ -4,13 +4,13 @@ import { Op } from "sequelize";
 import { TrafficAttributes, TrafficModel } from "../../models/traffic";
 import { UserModel } from "../../models/users";
 import { VehicleModel } from "../../models/vehicles";
-import { generateDateTime } from "../../utilities";
+import { v4 as uuidv4 } from "uuid";
 import { ResponseData, ResponseDataAttributes } from "../../utilities/response";
 
 interface IBodyRequestModel {
 	plateNumber: string;
 	rfidCard: string;
-	rfidLongDistance: string;
+	rfidVehicle: string;
 	vehicleImage: string;
 }
 
@@ -23,55 +23,32 @@ export const verifyVehicle = async (req: any, res: Response) => {
 				deleted: { [Op.eq]: 0 },
 				vehiclePlateNumber: { [Op.eq]: bodyRequest.plateNumber },
 			},
-			include: {
-				model: UserModel,
-				where: {
-					deleted: { [Op.eq]: 0 },
-					rfid: { [Op.eq]: bodyRequest.rfidCard },
-				},
-			},
 		});
 
-		if (!vehicle) {
-			const message =
-				"Jenis kendaraan tidak ditemukan. Silahkan lakukan pendaftaran terlebih dahulu.";
-			const response = <ResponseDataAttributes>ResponseData.error(message);
-			return res.status(StatusCodes.NOT_FOUND).json(response);
-		}
-
-		const checkTraffic = await TrafficModel.findOne({
+		const user = await UserModel.findOne({
 			where: {
 				deleted: { [Op.eq]: 0 },
-				trafficVehicleId: { [Op.eq]: vehicle.id },
-				trafficUserId: { [Op.eq]: vehicle.vehicleUserId },
-				trafficVehicleCheckOut: { [Op.eq]: "waiting" },
+				userRfidCard: { [Op.eq]: bodyRequest.rfidCard },
 			},
 		});
 
-		if (!checkTraffic) {
-			const data = <TrafficAttributes>{
-				trafficUserId: vehicle.vehicleUserId,
-				trafficVehicleId: vehicle.id,
-				trafficVehicleCheckIn: generateDateTime(),
-				trafficVehicleCheckOut: "waiting",
-				trafficVehicleImage: bodyRequest.vehicleImage,
-			};
-			const result = await TrafficModel.create(data);
-			const response = <ResponseDataAttributes>ResponseData.default;
-			response.data = { message: "succsess" };
-			return res.status(StatusCodes.CREATED).json(response);
-		}
+		const data = <TrafficAttributes>{
+			trafficId: uuidv4(),
+			trafficUserName: user?.userName,
+			trafficVehicleName: vehicle?.vehicleName,
+			trafficVehicleType: vehicle?.vehicleType,
+			trafficVehicleColor: vehicle?.vehicleColor,
+			trafficUserRfidCard:
+				bodyRequest.rfidCard === "" ? null : bodyRequest.rfidCard,
+			trafficVehicleRfid:
+				bodyRequest.rfidVehicle === "" ? null : bodyRequest.rfidVehicle,
+			trafficVehicleImage:
+				bodyRequest.vehicleImage === "" ? null : bodyRequest.vehicleImage,
+			trafficVehiclePlateNumber:
+				bodyRequest.plateNumber === "" ? null : bodyRequest.plateNumber,
+		};
+		await TrafficModel.create(data);
 
-		await TrafficModel.update(
-			{ trafficVehicleCheckOut: generateDateTime() },
-			{
-				where: {
-					trafficVehicleId: { [Op.eq]: vehicle.id },
-					trafficUserId: { [Op.eq]: vehicle.vehicleUserId },
-					trafficVehicleCheckIn: { [Op.eq]: "waiting" },
-				},
-			}
-		);
 		const response = <ResponseDataAttributes>ResponseData.default;
 		response.data = { message: "succsess" };
 		return res.status(StatusCodes.OK).json(response);

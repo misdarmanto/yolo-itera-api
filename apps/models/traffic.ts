@@ -3,13 +3,20 @@ import { sequelize } from ".";
 import { UserModel } from "./users";
 import { VehicleModel } from "./vehicles";
 import { ZygoteAttributes, ZygoteModel } from "./zygote";
+import moment from "moment";
 
 export interface TrafficAttributes extends ZygoteAttributes {
-	trafficVehicleId: number;
-	trafficUserId: number;
+	trafficId: string;
+	trafficUserName: string | null;
+	trafficUserRfidCard: string | null;
+	trafficVehicleName: string | null;
+	trafficVehicleType: "mobil" | "motor";
+	trafficVehicleColor: string | null;
+	trafficVehicleRfid: string | null;
 	trafficVehicleCheckIn: string;
 	trafficVehicleCheckOut: string;
-	trafficVehicleImage: string;
+	trafficVehicleImage: string | null;
+	trafficVehiclePlateNumber: string | null;
 }
 
 type TrafficCreationAttributes = Optional<
@@ -25,25 +32,49 @@ export const TrafficModel = sequelize.define<TrafficInstance>(
 	"traffic",
 	{
 		...ZygoteModel,
-		trafficUserId: {
-			type: DataTypes.NUMBER,
+		trafficId: {
+			type: DataTypes.STRING,
 			allowNull: false,
 		},
-		trafficVehicleId: {
-			type: DataTypes.NUMBER,
-			allowNull: false,
+		trafficUserName: {
+			type: DataTypes.STRING,
+			allowNull: true,
+		},
+		trafficUserRfidCard: {
+			type: DataTypes.STRING,
+			allowNull: true,
+		},
+		trafficVehicleName: {
+			type: DataTypes.STRING,
+			allowNull: true,
+		},
+		trafficVehicleType: {
+			type: DataTypes.ENUM("motor", "mobil"),
+			allowNull: true,
+		},
+		trafficVehicleColor: {
+			type: DataTypes.STRING,
+			allowNull: true,
+		},
+		trafficVehicleRfid: {
+			type: DataTypes.STRING,
+			allowNull: true,
 		},
 		trafficVehicleCheckIn: {
 			type: DataTypes.STRING,
-			allowNull: false,
+			allowNull: true,
 		},
 		trafficVehicleCheckOut: {
 			type: DataTypes.STRING,
-			allowNull: false,
+			allowNull: true,
 		},
 		trafficVehicleImage: {
 			type: DataTypes.STRING,
-			allowNull: false,
+			allowNull: true,
+		},
+		trafficVehiclePlateNumber: {
+			type: DataTypes.STRING,
+			allowNull: true,
 		},
 	},
 	{
@@ -55,8 +86,18 @@ export const TrafficModel = sequelize.define<TrafficInstance>(
 		underscored: true,
 		freezeTableName: true,
 		engine: "InnoDB",
+		hooks: {
+			beforeCreate: (record, options) => {
+				let now = moment().add(7, "hours").format("YYYY-MM-DD HH:mm:ss");
+				record.createdOn = now;
+				record.modifiedOn = null;
+				record.trafficVehicleCheckIn = now;
+			},
+			beforeUpdate: (record, options) => {
+				let now = moment().add(7, "hours").format("YYYY-MM-DD HH:mm:ss");
+				record.modifiedOn = now;
+				record.trafficVehicleCheckOut = now;
+			},
+		},
 	}
 );
-
-TrafficModel.hasOne(VehicleModel, { sourceKey: "trafficVehicleId", foreignKey: "id" });
-TrafficModel.hasOne(UserModel, { sourceKey: "trafficUserId", foreignKey: "id" });

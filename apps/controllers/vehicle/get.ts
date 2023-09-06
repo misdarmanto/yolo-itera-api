@@ -19,7 +19,7 @@ export const getListVehicle = async (req: any, res: Response) => {
 			},
 			include: {
 				model: UserModel,
-				attributes: ["userName", "userRfidCard"],
+				attributes: ["userName"],
 			},
 			order: [["id", "desc"]],
 			...(req.query.pagination == "true" && {

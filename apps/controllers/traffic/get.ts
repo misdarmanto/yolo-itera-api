@@ -11,41 +11,23 @@ import { ResponseData, ResponseDataAttributes } from "../../utilities/response";
 export const getListTraffic = async (req: any, res: Response) => {
 	try {
 		const page = new Pagination(+req.query.page || 0, +req.query.size || 10);
-
-		const includeModels = [
-			{
-				model: VehicleModel,
-				where: {
-					deleted: { [Op.eq]: 0 },
-					...(req.query.search && {
-						[Op.or]: [{ name: { [Op.like]: `%${req.query.search}%` } }],
-					}),
-					...(req.query.plate && {
-						[Op.or]: [{ plateNumber: { [Op.like]: `%${req.query.plate}%` } }],
-					}),
-				},
-				attributes: ["name", "plateNumber", "type", "color", "photo"],
-			},
-			{
-				model: UserModel,
-				where: {
-					deleted: { [Op.eq]: 0 },
-					...(req.query.search && {
-						[Op.or]: [{ userName: { [Op.like]: `%${req.query.search}%` } }],
-					}),
-				},
-				attributes: ["userName", "userRfidCard", "userPhoto"],
-			},
-		];
-
 		const traffic = await TrafficModel.findAndCountAll({
-			where: { deleted: { [Op.eq]: 0 } },
+			where: {
+				deleted: { [Op.eq]: 0 },
+				...(req.query.search && {
+					[Op.or]: [{ vehicleName: { [Op.like]: `%${req.query.search}%` } }],
+				}),
+				...(req.query.search && {
+					[Op.or]: [
+						{ vehiclePlateNumber: { [Op.like]: `%${req.query.search}%` } },
+					],
+				}),
+			},
 			order: [["id", "desc"]],
 			...(req.query.pagination == "true" && {
 				limit: page.limit,
 				offset: page.offset,
 			}),
-			include: includeModels,
 		});
 
 		const response = <ResponseDataAttributes>ResponseData.default;

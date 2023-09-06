@@ -16,6 +16,7 @@ export const createVehicle = async (req: any, res: Response) => {
 			"vehiclePlateNumber",
 			"vehicleType",
 			"vehicleColor",
+			"vehicleRfid",
 			"vehicleUserId",
 		],
 		requestData: requestBody,

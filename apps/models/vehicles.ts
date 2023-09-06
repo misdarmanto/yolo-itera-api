@@ -8,7 +8,7 @@ export interface VehicleAttributes extends ZygoteAttributes {
 	vehiclePlateNumber: string;
 	vehicleType: "motor" | "mobil";
 	vehicleRfid: string;
-	vehicleUserId: number;
+	vehicleUserId: string;
 	vehicleName: string;
 	vehicleColor: string;
 	vehiclePhoto: string;
@@ -28,7 +28,7 @@ export const VehicleModel = sequelize.define<VehicleInstance>(
 	{
 		...ZygoteModel,
 		vehicleId: {
-			type: DataTypes.INTEGER,
+			type: DataTypes.STRING,
 			allowNull: false,
 		},
 		vehiclePlateNumber: {
@@ -40,7 +40,7 @@ export const VehicleModel = sequelize.define<VehicleInstance>(
 			allowNull: false,
 		},
 		vehicleRfid: {
-			type: DataTypes.INTEGER,
+			type: DataTypes.STRING,
 			allowNull: false,
 		},
 		vehicleUserId: {
@@ -72,5 +72,5 @@ export const VehicleModel = sequelize.define<VehicleInstance>(
 	}
 );
 
-UserModel.hasMany(VehicleModel, { sourceKey: "vehicle_id", foreignKey: "user_id" });
-VehicleModel.hasOne(UserModel, { sourceKey: "user_id", foreignKey: "vehicle_id" });
+VehicleModel.hasOne(UserModel, { sourceKey: "vehicleUserId", foreignKey: "userId" });
+UserModel.hasMany(VehicleModel, { sourceKey: "userId", foreignKey: "vehicleUserId" });
