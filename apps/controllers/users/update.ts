@@ -6,11 +6,11 @@ import { requestChecker } from "../../utilities/requestChecker";
 import { ResponseData, ResponseDataAttributes } from "../../utilities/response";
 
 export const updateUser = async (req: any, res: Response) => {
-	const body = <UserAttributes>req.body;
+	const requestBody = <UserAttributes>req.body;
 
 	const emptyField = requestChecker({
-		requireList: ["id"],
-		requestData: body,
+		requireList: ["userId"],
+		requestData: requestBody,
 	});
 
 	if (emptyField) {
@@ -21,7 +21,10 @@ export const updateUser = async (req: any, res: Response) => {
 
 	try {
 		const user = await UserModel.findOne({
-			where: { deleted: { [Op.eq]: 0 }, id: { [Op.eq]: body.id } },
+			where: {
+				deleted: { [Op.eq]: 0 },
+				userId: { [Op.eq]: requestBody.userId },
+			},
 		});
 
 		if (!user) {
@@ -31,15 +34,19 @@ export const updateUser = async (req: any, res: Response) => {
 		}
 
 		const newData = <UserAttributes>{
-			...(body.name && { name: body.name }),
-			...(body.email && { email: body.email }),
-			...(body.registerAs && { registerAs: body.registerAs }),
-			...(body.phone && { type: body.phone }),
-			...(body.photo && { photo: body.photo }),
-			...(body.photoIdentity && { photoIdentity: body.photoIdentity }),
+			...(requestBody.userName && { userName: requestBody.userName }),
+			...(requestBody.userEmail && { userEmail: requestBody.userEmail }),
+			...(requestBody.userRegisterAs && {
+				userRegisterAs: requestBody.userRegisterAs,
+			}),
+			...(requestBody.userPhoneNumber && { type: requestBody.userPhoneNumber }),
+			...(requestBody.userPhoto && { userPhoto: requestBody.userPhoto }),
 		};
 
-		await UserModel.update(newData, { where: { id: { [Op.eq]: body.id } } });
+		await UserModel.update(newData, {
+			where: { userId: { [Op.eq]: requestBody.userId } },
+		});
+
 		const response = <ResponseDataAttributes>ResponseData.default;
 		response.data = "user has been updated.";
 		return res.status(StatusCodes.OK).json(response);

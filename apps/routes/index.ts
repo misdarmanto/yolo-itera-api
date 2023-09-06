@@ -27,7 +27,9 @@ export const route = (app: Express) => {
 	adminRouter.patch("/", (req: Request, res: Response) => ADMIN.update(req, res));
 	adminRouter.delete("/", (req: Request, res: Response) => ADMIN.delete(req, res));
 	adminRouter.get("/list", (req: Request, res: Response) => ADMIN.list(req, res));
-	adminRouter.post("/register", (req: Request, res: Response) => ADMIN.signUp(req, res));
+	adminRouter.post("/register", (req: Request, res: Response) =>
+		ADMIN.registration(req, res)
+	);
 	adminRouter.post("/login", (req: Request, res: Response) => ADMIN.login(req, res));
 	adminRouter.get("/logout", (req: Request, res: Response) => ADMIN.logout(req, res));
 
@@ -41,7 +43,9 @@ export const route = (app: Express) => {
 
 	const trafficRouter = express.Router();
 	app.use("/traffic", middleware.useAuthorization, trafficRouter);
-	trafficRouter.post("/verify", (req: Request, res: Response) => TRAFFIC.verify(req, res));
+	trafficRouter.post("/verify", (req: Request, res: Response) =>
+		TRAFFIC.verify(req, res)
+	);
 	trafficRouter.get("/list", (req: Request, res: Response) => TRAFFIC.list(req, res));
 	trafficRouter.get("/", (req: Request, res: Response) => TRAFFIC.single(req, res));
 };

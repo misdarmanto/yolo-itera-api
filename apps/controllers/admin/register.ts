@@ -5,13 +5,20 @@ import { AdminAttributes, AdminModel } from "../../models/admin";
 import { requestChecker } from "../../utilities/requestChecker";
 import { ResponseData, ResponseDataAttributes } from "../../utilities/response";
 import { hashPassword } from "../../utilities/scure_password";
+import { v4 as uuidv4 } from "uuid";
 
-export const signUp = async (req: any, res: Response) => {
-	const body = <AdminAttributes>req.body;
+export const registration = async (req: any, res: Response) => {
+	const requestBody = <AdminAttributes>req.body;
 
 	const emptyField = requestChecker({
-		requireList: ["name", "email", "password", "role", "photo"],
-		requestData: body,
+		requireList: [
+			"adminName",
+			"adminEmail",
+			"adminPassword",
+			"adminRole",
+			"adminPhoto",
+		],
+		requestData: requestBody,
 	});
 
 	if (emptyField) {
@@ -22,21 +29,24 @@ export const signUp = async (req: any, res: Response) => {
 
 	try {
 		const admin = await AdminModel.findOne({
-			raw: true,
 			where: {
 				deleted: { [Op.eq]: 0 },
-				[Op.or]: [{ name: { [Op.eq]: body.name } }, { email: { [Op.eq]: body.email } }],
+				[Op.or]: [
+					{ adminName: { [Op.eq]: requestBody.adminName } },
+					{ adminEmail: { [Op.eq]: requestBody.adminEmail } },
+				],
 			},
 		});
 
 		if (admin) {
-			const message = `Email ${admin.email} sudah terdaftar. Silahkan gunakan email lain.`;
+			const message = `Email ${admin.adminEmail} sudah terdaftar. Silahkan gunakan email lain.`;
 			const response = <ResponseDataAttributes>ResponseData.error(message);
 			return res.status(StatusCodes.BAD_REQUEST).json(response);
 		}
 
-		body.password = hashPassword(body.password);
-		await AdminModel.create(body);
+		requestBody.adminId = uuidv4();
+		requestBody.adminPassword = hashPassword(requestBody.adminPassword);
+		await AdminModel.create(requestBody);
 
 		const response = <ResponseDataAttributes>ResponseData.default;
 		response.data = "registration sucsess";

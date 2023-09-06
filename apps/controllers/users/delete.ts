@@ -6,11 +6,11 @@ import { requestChecker } from "../../utilities/requestChecker";
 import { ResponseData, ResponseDataAttributes } from "../../utilities/response";
 
 export const deleteUser = async (req: any, res: Response) => {
-	const query = <UserAttributes>req.query;
+	const requestQuery = <UserAttributes>req.query;
 
 	const emptyField = requestChecker({
-		requireList: ["id"],
-		requestData: req.query,
+		requireList: ["userId"],
+		requestData: requestQuery,
 	});
 
 	if (emptyField) {
@@ -24,7 +24,7 @@ export const deleteUser = async (req: any, res: Response) => {
 			raw: true,
 			where: {
 				deleted: { [Op.eq]: 0 },
-				email: { [Op.eq]: query.id },
+				userEmail: { [Op.eq]: requestQuery.userEmail },
 			},
 		});
 
@@ -34,7 +34,10 @@ export const deleteUser = async (req: any, res: Response) => {
 			return res.status(StatusCodes.NOT_FOUND).json(response);
 		}
 
-		await UserModel.update({ deleted: 1 }, { where: { id: { [Op.eq]: query.id } } });
+		await UserModel.update(
+			{ deleted: 1 },
+			{ where: { userId: { [Op.eq]: requestQuery.userId } } }
+		);
 		const response = <ResponseDataAttributes>ResponseData.default;
 		response.data = "user has been deleted";
 		return res.status(StatusCodes.OK).json(response);

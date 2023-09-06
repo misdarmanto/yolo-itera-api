@@ -3,60 +3,62 @@ import { sequelize } from ".";
 import { ZygoteAttributes, ZygoteModel } from "./zygote";
 
 export interface UserAttributes extends ZygoteAttributes {
-    rfid: number;
-    phone: number;
-    email: string;
-    name: string;
-    photo: string;
-    photoIdentity: string;
-    registerAs: string;
+	userId: string;
+	userName: string;
+	userRfidCard: number;
+	userPhoneNumber: number;
+	userEmail: string;
+	userPhoto: string;
+	userRegisterAs: string;
 }
 
 type UserCreationAttributes = Optional<UserAttributes, "id" | "createdOn" | "modifiedOn">;
 
-interface UserInstance extends Model<UserAttributes, UserCreationAttributes>, UserAttributes {}
+interface UserInstance
+	extends Model<UserAttributes, UserCreationAttributes>,
+		UserAttributes {}
 
 export const UserModel = sequelize.define<UserInstance>(
-    "users",
-    {
-        ...ZygoteModel,
-        name: {
-            type: DataTypes.STRING,
-            allowNull: false,
-        },
-        registerAs: {
-            type: DataTypes.STRING,
-            allowNull: false,
-        },
-        rfid: {
-            type: DataTypes.NUMBER,
-            allowNull: false,
-        },
-        phone: {
-            type: DataTypes.NUMBER,
-            allowNull: false,
-        },
-        email: {
-            type: DataTypes.STRING,
-            allowNull: false,
-        },
-        photo: {
-            type: DataTypes.STRING,
-            allowNull: false,
-        },
-        photoIdentity: {
-            type: DataTypes.STRING,
-            allowNull: false,
-        },
-    },
-    {
-        ...sequelize,
-        timestamps: false,
-        tableName: "users",
-        deletedAt: false,
-        paranoid: true,
-        underscored: true,
-        freezeTableName: true,
-        engine: "InnoDB",
-    }
+	"users",
+	{
+		...ZygoteModel,
+		userId: {
+			type: DataTypes.STRING,
+			allowNull: false,
+		},
+		userName: {
+			type: DataTypes.STRING,
+			allowNull: false,
+		},
+		userRfidCard: {
+			type: DataTypes.NUMBER,
+			allowNull: false,
+		},
+		userRegisterAs: {
+			type: DataTypes.STRING,
+			allowNull: false,
+		},
+		userPhoneNumber: {
+			type: DataTypes.NUMBER,
+			allowNull: false,
+		},
+		userEmail: {
+			type: DataTypes.STRING,
+			allowNull: false,
+		},
+		userPhoto: {
+			type: DataTypes.STRING,
+			allowNull: false,
+		},
+	},
+	{
+		...sequelize,
+		timestamps: false,
+		tableName: "users",
+		deletedAt: false,
+		paranoid: true,
+		underscored: true,
+		freezeTableName: true,
+		engine: "InnoDB",
+	}
 );

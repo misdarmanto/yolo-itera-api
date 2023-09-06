@@ -6,11 +6,11 @@ import { requestChecker } from "../../utilities/requestChecker";
 import { ResponseData, ResponseDataAttributes } from "../../utilities/response";
 
 export const updateAdmin = async (req: any, res: Response) => {
-	const body = <AdminAttributes>req.body;
+	const requestBodybody = <AdminAttributes>req.body;
 
 	const emptyField = requestChecker({
-		requireList: ["id"],
-		requestData: body,
+		requireList: ["adminId"],
+		requestData: requestBodybody,
 	});
 
 	if (emptyField) {
@@ -21,7 +21,10 @@ export const updateAdmin = async (req: any, res: Response) => {
 
 	try {
 		const adminCheck = await AdminModel.findOne({
-			where: { deleted: { [Op.eq]: 0 }, id: { [Op.eq]: body.id } },
+			where: {
+				deleted: { [Op.eq]: 0 },
+				adminId: { [Op.eq]: requestBodybody.adminId },
+			},
 		});
 
 		if (!adminCheck) {
@@ -31,13 +34,15 @@ export const updateAdmin = async (req: any, res: Response) => {
 		}
 
 		const newData = <AdminAttributes>{
-			...(body.name && { name: body.name }),
-			...(body.email && { email: body.email }),
-			...(body.role && { registerAs: body.role }),
-			...(body.password && { type: body.password }),
+			...(requestBodybody.adminName && { name: requestBodybody.adminName }),
+			...(requestBodybody.adminEmail && { email: requestBodybody.adminEmail }),
+			...(requestBodybody.adminRole && { registerAs: requestBodybody.adminRole }),
+			...(requestBodybody.adminPassword && { type: requestBodybody.adminPassword }),
 		};
 
-		await AdminModel.update(newData, { where: { id: { [Op.eq]: body.id } } });
+		await AdminModel.update(newData, {
+			where: { adminId: { [Op.eq]: requestBodybody.adminId } },
+		});
 		const response = <ResponseDataAttributes>ResponseData.default;
 		response.data = "admin has been updated.";
 		return res.status(StatusCodes.OK).json(response);

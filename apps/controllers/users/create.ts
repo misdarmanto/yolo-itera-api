@@ -4,21 +4,21 @@ import { Op } from "sequelize";
 import { UserAttributes, UserModel } from "../../models/users";
 import { requestChecker } from "../../utilities/requestChecker";
 import { ResponseData, ResponseDataAttributes } from "../../utilities/response";
+import { v4 as uuidv4 } from "uuid";
 
 export const createUser = async (req: any, res: Response) => {
-	const body = <UserAttributes>req.body;
+	const requestBody = <UserAttributes>req.body;
 
 	const emptyField = requestChecker({
 		requireList: [
-			"name",
-			"email",
-			"phone",
-			"registerAs",
-			"photoIdentity",
-			"photo",
-			"rfid",
+			"userName",
+			"userEmail",
+			"userRfidCard",
+			"userPhoneNumber",
+			"userRegisterAs",
+			"userPhoto",
 		],
-		requestData: body,
+		requestData: requestBody,
 	});
 
 	if (emptyField) {
@@ -29,10 +29,9 @@ export const createUser = async (req: any, res: Response) => {
 
 	try {
 		const user = await UserModel.findOne({
-			raw: true,
 			where: {
 				deleted: { [Op.eq]: 0 },
-				email: { [Op.eq]: body.email },
+				userEmail: { [Op.eq]: requestBody.userEmail },
 			},
 		});
 
@@ -42,7 +41,8 @@ export const createUser = async (req: any, res: Response) => {
 			return res.status(StatusCodes.BAD_REQUEST).json(response);
 		}
 
-		await UserModel.create(body);
+		requestBody.userId = uuidv4();
+		await UserModel.create(requestBody);
 
 		const response = <ResponseDataAttributes>ResponseData.default;
 		response.data = "user has been created";

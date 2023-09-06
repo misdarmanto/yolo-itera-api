@@ -38,7 +38,7 @@ export const getAdminList = async (req: any, res: Response) => {
 				limit: page.limit,
 				offset: page.offset,
 			}),
-			attributes: ["id", "name", "email", "role", "photo"],
+			attributes: ["adminId", "adminName", "adminEmail", "adminRole", "adminPhoto"],
 		});
 
 		if (!admin) {

@@ -1,7 +1,7 @@
 import { Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import { Op } from "sequelize";
-import { UserModel } from "../../models/users";
+import { UserAttributes, UserModel } from "../../models/users";
 import { VehicleModel } from "../../models/vehicles";
 import { Pagination } from "../../utilities/pagination";
 import { requestChecker } from "../../utilities/requestChecker";
@@ -40,9 +40,10 @@ export const getListUsers = async (req: any, res: Response) => {
 };
 
 export const getSingleUser = async (req: any, res: Response) => {
+	const requestQuery = <UserAttributes>req.query;
 	const emptyField = requestChecker({
-		requireList: ["id"],
-		requestData: req.query,
+		requireList: ["userId"],
+		requestData: requestQuery,
 	});
 
 	if (emptyField) {
@@ -53,7 +54,10 @@ export const getSingleUser = async (req: any, res: Response) => {
 
 	try {
 		const user = await UserModel.findOne({
-			where: { deleted: { [Op.eq]: 0 }, id: { [Op.eq]: req.query.id } },
+			where: {
+				deleted: { [Op.eq]: 0 },
+				userId: { [Op.eq]: requestQuery.userId },
+			},
 		});
 
 		if (!user) {

@@ -7,11 +7,11 @@ import { ResponseData, ResponseDataAttributes } from "../../utilities/response";
 import { hashPassword } from "../../utilities/scure_password";
 
 export const login = async (req: any, res: Response) => {
-	const body = <AdminAttributes>req.body;
+	const requestBody = <AdminAttributes>req.body;
 
 	const emptyField = requestChecker({
-		requireList: ["email", "password"],
-		requestData: body,
+		requireList: ["adminEmail", "adminPassword"],
+		requestData: requestBody,
 	});
 
 	if (emptyField) {
@@ -21,21 +21,25 @@ export const login = async (req: any, res: Response) => {
 	}
 
 	try {
-		const user = await AdminModel.findOne({
+		const admin = await AdminModel.findOne({
 			raw: true,
 			where: {
 				deleted: { [Op.eq]: 0 },
-				[Op.or]: [{ name: { [Op.eq]: body.name } }, { email: { [Op.eq]: body.email } }],
+				[Op.or]: [
+					{ adminName: { [Op.eq]: requestBody.adminName } },
+					{ adminEmail: { [Op.eq]: requestBody.adminEmail } },
+				],
 			},
 		});
 
-		if (!user) {
-			const message = "Akun tidak ditemukan. Silahkan lakukan pendaftaran terlebih dahulu!";
+		if (!admin) {
+			const message =
+				"Akun tidak ditemukan. Silahkan lakukan pendaftaran terlebih dahulu!";
 			const response = <ResponseDataAttributes>ResponseData.error(message);
 			return res.status(StatusCodes.NOT_FOUND).json(response);
 		}
 
-		if (hashPassword(body.password) !== user?.password) {
+		if (hashPassword(requestBody.adminPassword) !== admin?.adminPassword) {
 			const message = "kombinasi email dan password tidak ditemukan!";
 			const response = <ResponseDataAttributes>ResponseData.error(message);
 			return res.status(StatusCodes.UNAUTHORIZED).json(response);
@@ -43,11 +47,11 @@ export const login = async (req: any, res: Response) => {
 
 		const response = <ResponseDataAttributes>ResponseData.default;
 		response.data = {
-			adminId: user.id,
-			adminName: user.name,
-			email: user.email,
-			role: user.role,
-			photo: user.photo,
+			adminId: admin.adminId,
+			adminName: admin.adminName,
+			adminEmail: admin.adminEmail,
+			adminRole: admin.adminRole,
+			adminPhoto: admin.adminRole,
 		};
 		return res.status(StatusCodes.OK).json(response);
 	} catch (error: any) {

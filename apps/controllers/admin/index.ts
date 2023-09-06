@@ -2,14 +2,14 @@ import { deleteAdmin } from "./delete";
 import { getAdminList } from "./get";
 import { login } from "./login";
 import { logout } from "./logout";
-import { signUp } from "./register";
+import { registration } from "./register";
 import { updateAdmin } from "./update";
 
 export const ADMIN = {
 	list: getAdminList,
 	login: login,
 	logout: logout,
-	signUp: signUp,
+	registration: registration,
 	update: updateAdmin,
 	delete: deleteAdmin,
 };
