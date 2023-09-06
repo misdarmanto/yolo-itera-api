@@ -4,12 +4,14 @@ import { UserModel } from "./users";
 import { ZygoteAttributes, ZygoteModel } from "./zygote";
 
 export interface VehicleAttributes extends ZygoteAttributes {
-	plateNumber: string;
-	type: string;
-	userId: number;
-	name: string;
-	color: string;
-	photo: string;
+	vehicleId: string;
+	vehiclePlateNumber: string;
+	vehicleType: "motor" | "mobil";
+	vehicleRfid: string;
+	vehicleUserId: number;
+	vehicleName: string;
+	vehicleColor: string;
+	vehiclePhoto: string;
 }
 
 type VehicleCreationAttributes = Optional<
@@ -25,27 +27,35 @@ export const VehicleModel = sequelize.define<VehicleInstance>(
 	"vehicles",
 	{
 		...ZygoteModel,
-		userId: {
+		vehicleId: {
 			type: DataTypes.INTEGER,
 			allowNull: false,
 		},
-		plateNumber: {
+		vehiclePlateNumber: {
 			type: DataTypes.STRING,
 			allowNull: false,
 		},
-		type: {
+		vehicleType: {
+			type: DataTypes.ENUM("motor", "mobil"),
+			allowNull: false,
+		},
+		vehicleRfid: {
+			type: DataTypes.INTEGER,
+			allowNull: false,
+		},
+		vehicleUserId: {
+			type: DataTypes.INTEGER,
+			allowNull: false,
+		},
+		vehicleName: {
 			type: DataTypes.STRING,
 			allowNull: false,
 		},
-		name: {
+		vehicleColor: {
 			type: DataTypes.STRING,
 			allowNull: false,
 		},
-		color: {
-			type: DataTypes.STRING,
-			allowNull: false,
-		},
-		photo: {
+		vehiclePhoto: {
 			type: DataTypes.STRING,
 			allowNull: false,
 		},
@@ -62,5 +72,5 @@ export const VehicleModel = sequelize.define<VehicleInstance>(
 	}
 );
 
-UserModel.hasMany(VehicleModel, { sourceKey: "id", foreignKey: "user_id" });
-VehicleModel.hasOne(UserModel, { sourceKey: "user_id", foreignKey: "id" });
+UserModel.hasMany(VehicleModel, { sourceKey: "vehicle_id", foreignKey: "user_id" });
+VehicleModel.hasOne(UserModel, { sourceKey: "user_id", foreignKey: "vehicle_id" });

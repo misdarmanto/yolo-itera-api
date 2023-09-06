@@ -5,13 +5,20 @@ import { Op } from "sequelize";
 import { VehicleAttributes, VehicleModel } from "../../models/vehicles";
 import { UserModel } from "../../models/users";
 import { requestChecker } from "../../utilities/requestChecker";
+import { v4 as uuidv4 } from "uuid";
 
 export const createVehicle = async (req: any, res: Response) => {
-	const body = <VehicleAttributes>req.body;
+	const requestBody = <VehicleAttributes>req.body;
 
 	const emptyField = requestChecker({
-		requireList: ["name", "plateNumber", "type", "color", "userId"],
-		requestData: body,
+		requireList: [
+			"vehicleName",
+			"vehiclePlateNumber",
+			"vehicleType",
+			"vehicleColor",
+			"vehicleUserId",
+		],
+		requestData: requestBody,
 	});
 
 	if (emptyField) {
@@ -22,7 +29,10 @@ export const createVehicle = async (req: any, res: Response) => {
 
 	try {
 		const isUsersExis = await UserModel.findOne({
-			where: { deleted: { [Op.eq]: 0 }, id: { [Op.eq]: body.userId } },
+			where: {
+				deleted: { [Op.eq]: 0 },
+				userId: { [Op.eq]: requestBody.vehicleUserId },
+			},
 		});
 
 		if (!isUsersExis) {
@@ -31,7 +41,9 @@ export const createVehicle = async (req: any, res: Response) => {
 			return res.status(StatusCodes.FORBIDDEN).json(response);
 		}
 
-		await VehicleModel.create(body);
+		requestBody.vehicleId = uuidv4();
+
+		await VehicleModel.create(requestBody);
 		const response = <ResponseDataAttributes>ResponseData.default;
 		response.data = "vehicle has been created.";
 		return res.status(StatusCodes.CREATED).json(response);

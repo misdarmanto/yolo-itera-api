@@ -31,10 +31,10 @@ export const getListTraffic = async (req: any, res: Response) => {
 				where: {
 					deleted: { [Op.eq]: 0 },
 					...(req.query.search && {
-						[Op.or]: [{ name: { [Op.like]: `%${req.query.search}%` } }],
+						[Op.or]: [{ userName: { [Op.like]: `%${req.query.search}%` } }],
 					}),
 				},
-				attributes: ["name", "rfid", "photo"],
+				attributes: ["userName", "userRfidCard", "userPhoto"],
 			},
 		];
 
@@ -80,14 +80,20 @@ export const getSingleTraffic = async (req: any, res: Response) => {
 					where: {
 						deleted: { [Op.eq]: 0 },
 					},
-					attributes: ["name", "plateNumber", "type", "color", "photo"],
+					attributes: [
+						"vehicleName",
+						"vehiclePlateNumber",
+						"vehicleType",
+						"vehicleColor",
+						"vehiclePhoto",
+					],
 				},
 				{
 					model: UserModel,
 					where: {
 						deleted: { [Op.eq]: 0 },
 					},
-					attributes: ["name", "rfid", "photo"],
+					attributes: ["userName", "userRfidCard", "userPhoto"],
 				},
 			],
 		});

@@ -4,7 +4,7 @@ import { ResponseData, ResponseDataAttributes } from "../utilities/response";
 
 export const index = async (req: Request, res: Response) => {
 	try {
-		const data = { aboutMe: "welcome to yolo itera API" };
+		const data = { aboutMe: "welcome to gerbang itera API" };
 		const response = <ResponseDataAttributes>ResponseData.default;
 		response.data = data;
 		return res.status(StatusCodes.OK).json(response);

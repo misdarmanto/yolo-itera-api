@@ -14,8 +14,8 @@ export const getListUsers = async (req: any, res: Response) => {
 			deleted: { [Op.eq]: 0 },
 			...(req.query.search && {
 				[Op.or]: [
-					{ name: { [Op.like]: `%${req.query.search}%` } },
-					{ email: { [Op.like]: `%${req.query.search}%` } },
+					{ userName: { [Op.like]: `%${req.query.search}%` } },
+					{ userEmail: { [Op.like]: `%${req.query.search}%` } },
 				],
 			}),
 		};

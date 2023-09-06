@@ -6,11 +6,11 @@ import { VehicleAttributes, VehicleModel } from "../../models/vehicles";
 import { requestChecker } from "../../utilities/requestChecker";
 
 export const updateVehicle = async (req: any, res: Response) => {
-	const body = <VehicleAttributes>req.body;
+	const requestBody = <VehicleAttributes>req.body;
 
 	const emptyField = requestChecker({
-		requireList: ["id"],
-		requestData: body,
+		requireList: ["vehicleId"],
+		requestData: requestBody,
 	});
 
 	if (emptyField) {
@@ -21,7 +21,12 @@ export const updateVehicle = async (req: any, res: Response) => {
 
 	try {
 		const vehicle = await VehicleModel.findOne({
-			where: { deleted: { [Op.eq]: 0 }, id: { [Op.eq]: body.id } },
+			where: {
+				deleted: { [Op.eq]: 0 },
+				vehicleId: {
+					[Op.eq]: requestBody.vehicleId,
+				},
+			},
 		});
 
 		if (!vehicle) {
@@ -31,15 +36,21 @@ export const updateVehicle = async (req: any, res: Response) => {
 		}
 
 		const newData = {
-			...(body.name && { name: body.name }),
-			...(body.plateNumber && { plateNumber: body.plateNumber }),
-			...(body.type && { type: body.type }),
-			...(body.userId && { userId: body.userId }),
-			...(body.color && { color: body.color }),
-			...(body.photo && { photo: body.photo }),
+			...(requestBody.vehicleName && { vehicleName: requestBody.vehicleName }),
+			...(requestBody.vehiclePlateNumber && {
+				vehiclePlateNumber: requestBody.vehiclePlateNumber,
+			}),
+			...(requestBody.vehicleType && { vehicleType: requestBody.vehicleType }),
+			...(requestBody.vehicleUserId && {
+				vehicleUserId: requestBody.vehicleUserId,
+			}),
+			...(requestBody.vehicleColor && { vehicleColor: requestBody.vehicleColor }),
+			...(requestBody.vehiclePhoto && { vehiclePhoto: requestBody.vehiclePhoto }),
 		};
 
-		await VehicleModel.update(newData, { where: { id: { [Op.eq]: body.id } } });
+		await VehicleModel.update(newData, {
+			where: { id: { [Op.eq]: requestBody.id } },
+		});
 
 		const response = <ResponseDataAttributes>ResponseData.default;
 		response.data = "vehicle has been updated.";

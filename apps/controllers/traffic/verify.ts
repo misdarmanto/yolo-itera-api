@@ -21,7 +21,7 @@ export const verifyVehicle = async (req: any, res: Response) => {
 		const vehicle = await VehicleModel.findOne({
 			where: {
 				deleted: { [Op.eq]: 0 },
-				plateNumber: { [Op.eq]: bodyRequest.plateNumber },
+				vehiclePlateNumber: { [Op.eq]: bodyRequest.plateNumber },
 			},
 			include: {
 				model: UserModel,
@@ -43,14 +43,14 @@ export const verifyVehicle = async (req: any, res: Response) => {
 			where: {
 				deleted: { [Op.eq]: 0 },
 				trafficVehicleId: { [Op.eq]: vehicle.id },
-				trafficUserId: { [Op.eq]: vehicle.userId },
+				trafficUserId: { [Op.eq]: vehicle.vehicleUserId },
 				trafficVehicleCheckOut: { [Op.eq]: "waiting" },
 			},
 		});
 
 		if (!checkTraffic) {
 			const data = <TrafficAttributes>{
-				trafficUserId: vehicle.userId,
+				trafficUserId: vehicle.vehicleUserId,
 				trafficVehicleId: vehicle.id,
 				trafficVehicleCheckIn: generateDateTime(),
 				trafficVehicleCheckOut: "waiting",
@@ -67,7 +67,7 @@ export const verifyVehicle = async (req: any, res: Response) => {
 			{
 				where: {
 					trafficVehicleId: { [Op.eq]: vehicle.id },
-					trafficUserId: { [Op.eq]: vehicle.userId },
+					trafficUserId: { [Op.eq]: vehicle.vehicleUserId },
 					trafficVehicleCheckIn: { [Op.eq]: "waiting" },
 				},
 			}

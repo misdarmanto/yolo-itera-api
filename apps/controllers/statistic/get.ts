@@ -8,10 +8,10 @@ import { UserModel } from "../../models/users";
 export const getStatistic = async (req: any, res: Response) => {
 	try {
 		const motor = await VehicleModel.count({
-			where: { deleted: { [Op.eq]: 0 }, type: "motor" },
+			where: { deleted: { [Op.eq]: 0 }, vehicleType: "motor" },
 		});
 		const mobil = await VehicleModel.count({
-			where: { deleted: { [Op.eq]: 0 }, type: "mobil" },
+			where: { deleted: { [Op.eq]: 0 }, vehicleType: "mobil" },
 		});
 		const users = await UserModel.count({
 			where: { deleted: { [Op.eq]: 0 } },

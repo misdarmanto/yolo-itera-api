@@ -14,12 +14,12 @@ export const getListVehicle = async (req: any, res: Response) => {
 			where: {
 				deleted: { [Op.eq]: 0 },
 				...(req.query.search && {
-					[Op.or]: [{ name: { [Op.like]: `%${req.query.search}%` } }],
+					[Op.or]: [{ vehicleName: { [Op.like]: `%${req.query.search}%` } }],
 				}),
 			},
 			include: {
 				model: UserModel,
-				attributes: ["name", "rfid"],
+				attributes: ["userName", "userRfidCard"],
 			},
 			order: [["id", "desc"]],
 			...(req.query.pagination == "true" && {
@@ -40,11 +40,11 @@ export const getListVehicle = async (req: any, res: Response) => {
 };
 
 export const getSingleVehicle = async (req: any, res: Response) => {
-	const query = <VehicleAttributes>req.query;
+	const requestQuery = <VehicleAttributes>req.query;
 
 	const emptyField = requestChecker({
-		requireList: ["id"],
-		requestData: query,
+		requireList: ["vehicleId"],
+		requestData: requestQuery,
 	});
 
 	if (emptyField) {
@@ -55,7 +55,10 @@ export const getSingleVehicle = async (req: any, res: Response) => {
 
 	try {
 		const vehicle = await VehicleModel.findOne({
-			where: { deleted: { [Op.eq]: 0 }, id: { [Op.eq]: query.id } },
+			where: {
+				deleted: { [Op.eq]: 0 },
+				vehicleId: { [Op.eq]: requestQuery.vehicleId },
+			},
 		});
 
 		if (!vehicle) {

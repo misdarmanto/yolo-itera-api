@@ -6,11 +6,11 @@ import { VehicleAttributes, VehicleModel } from "../../models/vehicles";
 import { requestChecker } from "../../utilities/requestChecker";
 
 export const deleteVehicle = async (req: any, res: Response) => {
-	const query = <VehicleAttributes>req.query;
+	const requestQuery = <VehicleAttributes>req.query;
 
 	const emptyField = requestChecker({
-		requireList: ["id"],
-		requestData: query,
+		requireList: ["vehicleId"],
+		requestData: requestQuery,
 	});
 
 	if (emptyField) {
@@ -21,7 +21,10 @@ export const deleteVehicle = async (req: any, res: Response) => {
 
 	try {
 		const vehicle = await VehicleModel.findOne({
-			where: { deleted: { [Op.eq]: 0 }, id: { [Op.eq]: req.query.id } },
+			where: {
+				deleted: { [Op.eq]: 0 },
+				vehicleId: { [Op.eq]: requestQuery.vehicleId },
+			},
 		});
 
 		if (!vehicle) {
@@ -30,7 +33,9 @@ export const deleteVehicle = async (req: any, res: Response) => {
 			return res.status(StatusCodes.NOT_FOUND).json(response);
 		}
 
-		await VehicleModel.update({ deleted: 1 }, { where: { id: { [Op.eq]: query.id } } });
+		vehicle.deleted = 1;
+		vehicle.save();
+
 		const response = <ResponseDataAttributes>ResponseData.default;
 		response.data = "vehicle has been deleted.";
 		return res.status(StatusCodes.OK).json(response);
