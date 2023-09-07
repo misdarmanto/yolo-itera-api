@@ -47,5 +47,7 @@ export const route = (app: Express) => {
 		TRAFFIC.verify(req, res)
 	);
 	trafficRouter.get("/list", (req: Request, res: Response) => TRAFFIC.list(req, res));
-	trafficRouter.get("/", (req: Request, res: Response) => TRAFFIC.single(req, res));
+	trafficRouter.get("/detail/:trafficId", (req: Request, res: Response) =>
+		TRAFFIC.single(req, res)
+	);
 };

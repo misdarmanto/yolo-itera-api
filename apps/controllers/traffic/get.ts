@@ -1,9 +1,7 @@
 import { Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import { Op } from "sequelize";
-import { TrafficModel } from "../../models/traffic";
-import { UserModel } from "../../models/users";
-import { VehicleModel } from "../../models/vehicles";
+import { TrafficAttributes, TrafficModel } from "../../models/traffic";
 import { Pagination } from "../../utilities/pagination";
 import { requestChecker } from "../../utilities/requestChecker";
 import { ResponseData, ResponseDataAttributes } from "../../utilities/response";
@@ -15,11 +13,18 @@ export const getListTraffic = async (req: any, res: Response) => {
 			where: {
 				deleted: { [Op.eq]: 0 },
 				...(req.query.search && {
-					[Op.or]: [{ vehicleName: { [Op.like]: `%${req.query.search}%` } }],
-				}),
-				...(req.query.search && {
 					[Op.or]: [
-						{ vehiclePlateNumber: { [Op.like]: `%${req.query.search}%` } },
+						{
+							trafficUserName: {
+								[Op.like]: `%${req.query.search}%`,
+							},
+						},
+						{ trafficVehicleName: { [Op.like]: `%${req.query.search}%` } },
+						{
+							trafficVehiclePlateNumber: {
+								[Op.like]: `%${req.query.search}%`,
+							},
+						},
 					],
 				}),
 			},
@@ -42,9 +47,10 @@ export const getListTraffic = async (req: any, res: Response) => {
 };
 
 export const getSingleTraffic = async (req: any, res: Response) => {
+	const requestParams = <TrafficAttributes>req.params;
 	const emptyField = requestChecker({
-		requireList: ["id"],
-		requestData: req.query,
+		requireList: ["trafficId"],
+		requestData: requestParams,
 	});
 
 	if (emptyField) {
@@ -55,29 +61,10 @@ export const getSingleTraffic = async (req: any, res: Response) => {
 
 	try {
 		const traffic = await TrafficModel.findOne({
-			where: { deleted: { [Op.eq]: 0 }, id: { [Op.eq]: req.query.id } },
-			include: [
-				{
-					model: VehicleModel,
-					where: {
-						deleted: { [Op.eq]: 0 },
-					},
-					attributes: [
-						"vehicleName",
-						"vehiclePlateNumber",
-						"vehicleType",
-						"vehicleColor",
-						"vehiclePhoto",
-					],
-				},
-				{
-					model: UserModel,
-					where: {
-						deleted: { [Op.eq]: 0 },
-					},
-					attributes: ["userName", "userRfidCard", "userPhoto"],
-				},
-			],
+			where: {
+				deleted: { [Op.eq]: 0 },
+				trafficId: { [Op.eq]: requestParams.trafficId },
+			},
 		});
 
 		if (!traffic) {

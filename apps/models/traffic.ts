@@ -14,7 +14,7 @@ export interface TrafficAttributes extends ZygoteAttributes {
 	trafficVehicleColor: string | null;
 	trafficVehicleRfid: string | null;
 	trafficVehicleCheckIn: string;
-	trafficVehicleCheckOut: string;
+	trafficVehicleCheckOut: string | null;
 	trafficVehicleImage: string | null;
 	trafficVehiclePlateNumber: string | null;
 }
@@ -91,12 +91,10 @@ export const TrafficModel = sequelize.define<TrafficInstance>(
 				let now = moment().add(7, "hours").format("YYYY-MM-DD HH:mm:ss");
 				record.createdOn = now;
 				record.modifiedOn = null;
-				record.trafficVehicleCheckIn = now;
 			},
 			beforeUpdate: (record, options) => {
 				let now = moment().add(7, "hours").format("YYYY-MM-DD HH:mm:ss");
 				record.modifiedOn = now;
-				record.trafficVehicleCheckOut = now;
 			},
 		},
 	}
