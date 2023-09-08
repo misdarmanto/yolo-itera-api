@@ -24,6 +24,8 @@ app.use(function (req, res, next) {
 	next();
 });
 
+app.use("/public", express.static("public"));
+
 app.routes = route(app);
 
 const PORT = CONFIG.port;

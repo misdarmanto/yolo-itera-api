@@ -11,6 +11,7 @@ export interface TrafficAttributes extends ZygoteAttributes {
 	trafficUserRfidCard: string | null;
 	trafficVehicleName: string | null;
 	trafficVehicleType: "mobil" | "motor";
+	trafficStatus: "checkIn" | "checkOut";
 	trafficVehicleColor: string | null;
 	trafficVehicleRfid: string | null;
 	trafficVehicleCheckIn: string;
@@ -50,6 +51,10 @@ export const TrafficModel = sequelize.define<TrafficInstance>(
 		},
 		trafficVehicleType: {
 			type: DataTypes.ENUM("motor", "mobil"),
+			allowNull: true,
+		},
+		trafficStatus: {
+			type: DataTypes.ENUM("checkIn", "checkOut"),
 			allowNull: true,
 		},
 		trafficVehicleColor: {

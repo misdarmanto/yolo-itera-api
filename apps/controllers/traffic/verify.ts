@@ -42,24 +42,21 @@ export const verifyVehicle = async (req: any, res: Response) => {
 
 		const payload = <TrafficAttributes>{
 			trafficId: uuidv4(),
-			trafficUserName: user?.userName,
-			trafficVehicleName: vehicle?.vehicleName,
-			trafficVehicleType: vehicle?.vehicleType,
-			trafficVehicleColor: vehicle?.vehicleColor,
-			trafficUserRfidCard:
-				bodyRequest.rfidCard === "" ? null : bodyRequest.rfidCard,
-			trafficVehicleRfid:
-				bodyRequest.rfidVehicle === "" ? null : bodyRequest.rfidVehicle,
+			trafficUserName: user?.userName || null,
+			trafficVehicleName: vehicle?.vehicleName || null,
+			trafficVehicleType: vehicle?.vehicleType || null,
+			trafficVehicleColor: vehicle?.vehicleColor || null,
+			trafficUserRfidCard: user?.userRfidCard || null,
+			trafficVehicleRfid: vehicle?.vehicleRfid || null,
+			trafficVehiclePlateNumber: vehicle?.vehiclePlateNumber || null,
 			trafficVehicleImage:
 				bodyRequest.vehicleImage === "" ? null : bodyRequest.vehicleImage,
-			trafficVehiclePlateNumber:
-				bodyRequest.plateNumber === "" ? null : bodyRequest.plateNumber,
 		};
 
 		const isTrafficExis = await TrafficModel.findOne({
 			where: {
 				deleted: { [Op.eq]: 0 },
-				trafficVehicleCheckOut: { [Op.eq]: null },
+				trafficStatus: { [Op.eq]: "checkIn" },
 				...(bodyRequest.plateNumber && {
 					trafficVehiclePlateNumber: {
 						[Op.eq]: bodyRequest.plateNumber,
@@ -78,15 +75,18 @@ export const verifyVehicle = async (req: any, res: Response) => {
 			},
 		});
 
-		console.log("_______is traffic exis________");
-		console.log(Boolean(isTrafficExis));
-
 		const currentDateTime = moment().add(7, "hours").format("YYYY-MM-DD HH:mm:ss");
 
 		if (isTrafficExis) {
 			payload["trafficVehicleCheckOut"] = currentDateTime;
+			payload["trafficVehicleCheckIn"] = isTrafficExis.trafficVehicleCheckIn;
+			payload["trafficStatus"] = "checkOut";
+
+			isTrafficExis.trafficVehicleCheckOut = currentDateTime;
+			isTrafficExis.save();
 		} else {
 			payload["trafficVehicleCheckIn"] = currentDateTime;
+			payload["trafficStatus"] = "checkIn";
 		}
 
 		await TrafficModel.create(payload);

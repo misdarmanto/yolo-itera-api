@@ -6,6 +6,7 @@ import { middleware } from "../middlewares";
 import { TRAFFIC } from "../controllers/traffic";
 import { STATISTIC } from "../controllers/statistic";
 import { ADMIN } from "../controllers/admin";
+import { uploadFileRoutes } from "./upload-file-route";
 
 export const route = (app: Express) => {
 	app.get("/", (req: Request, res: Response) => index(req, res));
@@ -50,4 +51,5 @@ export const route = (app: Express) => {
 	trafficRouter.get("/detail/:trafficId", (req: Request, res: Response) =>
 		TRAFFIC.single(req, res)
 	);
+	uploadFileRoutes(app);
 };
