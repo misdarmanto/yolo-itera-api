@@ -1,3 +1,3 @@
-import { getStatistic } from "./get";
+import { getStatistic } from './get'
 
-export const STATISTIC = { all: getStatistic };
+export const STATISTIC = { all: getStatistic }
