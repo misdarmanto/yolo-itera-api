@@ -6,7 +6,7 @@ import { CONFIG } from '../../configs'
 export const uploadFile = async (req: any, res: Response): Promise<any> => {
   try {
     const filePath = req.file.path
-    const fileUrl = `http://localhost:${CONFIG.port}/${filePath}`
+    const fileUrl = `http://localhost:${CONFIG.port}/api/v1/${filePath}`
     res.json({ message: 'File uploaded successfully!', fileUrl })
   } catch (error: any) {
     const message = `unable to process request! error ${error.message}`
